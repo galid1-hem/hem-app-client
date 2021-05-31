@@ -4,9 +4,14 @@ import AddPhotoBtn from "../component/AddPhotoBtn";
 import {theme} from "../Assets/theme/Color";
 import ImagePicker from "react-native-image-crop-picker";
 import Icon from 'react-native-vector-icons/Ionicons';
+import OkBtn from "../component/OkBtn";
+import urls from "../Assets/network/domains";
 
+function verifyUploadPostCondition(title, contents) {
+    return title && contents;
+}
 
-export default function CreatePostPage() {
+export default function UploadPostPage({navigation}) {
     const [title, onChangeTitle] = React.useState("");
     const [contents, onChangeContents] = React.useState("");
     const [images, setImages] = React.useState([]);
@@ -43,6 +48,44 @@ export default function CreatePostPage() {
         });
     }
 
+    const uploadPost = (title, contents, images) => {
+        if (! verifyUploadPostCondition(title, contents)) return;
+
+        fetch(urls.postServer, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                regionId: 1,
+                title: title,
+                contents: [
+                    {
+                        value: contents,
+                        type: "TEXT"
+                    }
+                ],
+                mediaIds: [
+                    {
+                        id: "TEST_IMAGE",
+                        type: "PHOTO"
+                    }
+                ]
+            })
+        })
+            .then(response => {
+                if (response.ok) {
+                    navigation.navigate("Home");
+                } else {
+                    alert(response.status);
+                }
+            })
+            .catch(err => {
+                alert(err.message + "(으)로 인해 업로드에 실패했습니다. 잠시 후 다시 시도해주세요.")
+            })
+
+    };
+
     let imageCount = images ? images.length : 0;
 
     return (
@@ -74,6 +117,9 @@ export default function CreatePostPage() {
                         placeholderTextColor={theme.colors.normalText}
                     />
                 </View>
+            </View>
+            <View style={styles.uploadBtnContainer}>
+                <OkBtn onPress={() => uploadPost(title, contents, images)} activated={verifyUploadPostCondition(title, contents)} text={"게시하기"}/>
             </View>
         </SafeAreaView>
     )
@@ -117,11 +163,16 @@ const styles = StyleSheet.create({
     contentsContainer: {
         borderTopWidth: 6,
         borderTopColor: theme.colors.border,
-        height: '75%',
+        height: '68%',
         alignItems: 'center'
     },
 
     contentsContentContainer: {
         width: '94%',
-    }
+    },
+
+    uploadBtnContainer: {
+        height: "7%",
+        width: "100%",
+    },
 });

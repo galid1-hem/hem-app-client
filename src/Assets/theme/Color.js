@@ -7,6 +7,7 @@ const palette = {
 export const theme = {
     colors: {
         background: palette.white,
+        activeBtnBackground: palette.orange,
         border: palette.gray,
         inActiveIcon: palette.gray,
         normalText: palette.gray,
