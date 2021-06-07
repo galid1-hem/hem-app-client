@@ -5,7 +5,7 @@ import {theme} from "../Assets/theme/Color";
 import ImagePicker from "react-native-image-crop-picker";
 import Icon from 'react-native-vector-icons/Ionicons';
 import OkBtn from "../component/OkBtn";
-import urls from "../Assets/network/domains";
+import urls from "../Assets/network/ServerUrls";
 
 function verifyUploadPostCondition(title, contents) {
     return title && contents;
@@ -76,6 +76,7 @@ export default function UploadPostPage({navigation}) {
             .then(response => {
                 if (response.ok) {
                     navigation.navigate("Home");
+                    console.log(navigation.getParameter("callback"));
                 } else {
                     alert(response.status);
                 }
@@ -94,7 +95,8 @@ export default function UploadPostPage({navigation}) {
                 <View style={styles.topContentContainer}>
                     <View style={styles.photoContainer}>
                         <AddPhotoBtn onPress={onPressAddPhotoBtn} imageCount={imageCount}/>
-                        <FlatList style={styles.selectedImagesContainer} contentContainerStyle={{alignItems: "center", width:'100%'}} horizontal={true} data={images}
+                        <FlatList style={styles.selectedImagesContainer} contentContainerStyle={{alignItems: "center", width:'100%'}} horizontal={true}
+                                  data={images}
                                   renderItem={renderSelectedImages}/>
                     </View>
                     <View style={styles.titleContainer}>
@@ -119,7 +121,9 @@ export default function UploadPostPage({navigation}) {
                 </View>
             </View>
             <View style={styles.uploadBtnContainer}>
-                <OkBtn onPress={() => uploadPost(title, contents, images)} activated={verifyUploadPostCondition(title, contents)} text={"게시하기"}/>
+                <OkBtn onPress={() => {
+                    uploadPost(title, contents, images)
+                }} activated={verifyUploadPostCondition(title, contents)} text={"게시하기"}/>
             </View>
         </SafeAreaView>
     )
