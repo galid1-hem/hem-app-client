@@ -2,7 +2,8 @@ import UploadPostPage from "../screens/UploadPostPage";
 import * as React from "react";
 import {createStackNavigator} from "@react-navigation/stack";
 import HomePage from "../screens/HomePage";
-import PostStackNavigator from "./PostStackNavigator";
+import PostDetailsPage from "../screens/PostDetailsPage";
+import CommentPage from "../screens/CommentPage";
 
 const Stack = createStackNavigator();
 
@@ -11,7 +12,8 @@ export default function HomeStackNavigator({navigation}) {
         <Stack.Navigator>
             <Stack.Screen name={"Home"} component={HomePage}/>
             <Stack.Screen name={"UploadPost"} component={UploadPostPage}/>
-            <Stack.Screen name={"PostStackNavigator"} component={PostStackNavigator} options={{headerShown: false}}/>
+            <Stack.Screen name={"PostDetails"} component={PostDetailsPage}/>
+            <Stack.Screen name={"Comment"} component={CommentPage}/>
         </Stack.Navigator>
     );
 }

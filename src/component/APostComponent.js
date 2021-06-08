@@ -38,10 +38,7 @@ const APostComponent = ({item}) => {
                     <LikeStatusComponent postId={item.postId} viewerLike={item.viewerLike}
                                          likeCount={item.postCounter.likeCount}/>
                     <CommentStatusComponent
-                        onPress={() => navigation.navigate("PostStackNavigator", {
-                            screen: "PostDetails",
-                            params: {post: item}
-                        })}
+                        onPress={() => navigation.navigate("PostDetails", {post: item})}
                         commentCount={item.postCounter.commentCount}/>
                 </View>
             </View>
@@ -60,12 +57,14 @@ const styles = StyleSheet.create({
     contentContainer: {
         width: '100%',
         alignItems: 'center',
-        marginTop: 8,
+        // marginTop: 8,
         marginBottom: 8,
     },
 
     userInfoContainer: {
-        height: 65
+        height: 65,
+        paddingHorizontal: "5%",
+        paddingTop: 10
     },
 
     contentContentsContainer: {},

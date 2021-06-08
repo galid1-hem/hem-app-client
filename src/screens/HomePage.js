@@ -10,7 +10,7 @@ export default function HomePage({navigation}) {
 
     const renderItem = ({item}) => {
         return (
-            <APostComponent item={item} navigation={navigation}/>
+            <APostComponent item={item}/>
         )
     };
 

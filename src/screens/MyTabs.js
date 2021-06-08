@@ -34,7 +34,7 @@ export default function MyTabs() {
                     inactiveTintColor: 'gray',
                 }}
             >
-                <Tab.Screen name="Home" component={HomeStackNavigator} />
+                <Tab.Screen name="Home" component={HomeStackNavigator}/>
                 <Tab.Screen name="My" component={MyPage} />
             </Tab.Navigator>
         </NavigationContainer>

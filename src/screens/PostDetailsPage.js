@@ -10,7 +10,7 @@ import CommentListComponent from "../component/CommentListComponent";
 import urls from "../assets/network/ServerUrls";
 
 export default function PostDetailsPage({route, navigation}) {
-    const [ commentList, setCommentList ] = React.useState([]);
+    const [commentList, setCommentList] = React.useState([]);
     const post = route.params.post;
 
     function fetchCommentList() {
@@ -23,10 +23,14 @@ export default function PostDetailsPage({route, navigation}) {
         fetchCommentList();
     }, [])
 
+    console.log("post : ", JSON.stringify(post))
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.userInfoContainer}>
-                <UserInfoComponent profileImageUrl={"https://homepages.cae.wisc.edu/~ece533/images/airplane.png"} userName={"디테일 페이지"} regionName={"역삼동"} createdAt={"2020/05/10"}/>
+                <UserInfoComponent profileImageUrl={"https://homepages.cae.wisc.edu/~ece533/images/airplane.png"}
+                                   userName={"디테일 페이지"} regionName={"역삼동"} createdAt={"2020/05/10"}/>
+
             </View>
 
             <View style={styles.contentContainer}>
@@ -37,7 +41,7 @@ export default function PostDetailsPage({route, navigation}) {
 
                     <View style={styles.contentContentsContainer}>
                         <View style={styles.textContainer}>
-                            <Text style={styles.contentsText}>{post?.contents?[0].value:""}</Text>
+                            <Text style={styles.contentsText}>{post.contents[0].value}</Text>
                         </View>
                         <TouchableOpacity style={styles.imagesContainer}>
 
@@ -48,8 +52,9 @@ export default function PostDetailsPage({route, navigation}) {
 
             <View style={styles.reactionComponentContainer}>
                 <View style={styles.reactionComponentContentContainer}>
-                    <LikeStatusComponent postId={post?.postId} viewerLike={post?.viewerLike} likeCount={post?.postCounter?.likeCount}/>
-                    <CommentStatusComponent commentCount={post?.postCounter?.commentCount} />
+                    <LikeStatusComponent postId={post?.postId} viewerLike={post?.viewerLike}
+                                         likeCount={post?.postCounter?.likeCount}/>
+                    <CommentStatusComponent commentCount={post?.postCounter?.commentCount}/>
                 </View>
             </View>
 
@@ -57,7 +62,7 @@ export default function PostDetailsPage({route, navigation}) {
 
             <View style={styles.commentListContainer}>
                 <WriteCommentComponent placeHolderText={"댓글을 입력해 주세요."}/>
-                <CommentListComponent commentList={commentList} />
+                <CommentListComponent commentList={commentList}/>
             </View>
         </SafeAreaView>
     );
@@ -79,29 +84,25 @@ const styles = StyleSheet.create({
     },
 
     userInfoContainer: {
-
+        alignItems: "center",
+        paddingHorizontal: "5%",
+        paddingVertical: 10
     },
 
-    contentContentsContainer: {
-
-    },
+    contentContentsContainer: {},
 
     titleText: {
         fontWeight: "bold",
         fontSize: 17
     },
 
-    textContainer: {
-
-    },
+    textContainer: {},
 
     contentsText: {
         fontSize: 15
     },
 
-    imagesContainer: {
-
-    },
+    imagesContainer: {},
 
     reactionComponentContainer: {
         borderTopColor: theme.colors.border,
@@ -115,7 +116,5 @@ const styles = StyleSheet.create({
         width: "95%"
     },
 
-    commentListContainer: {
-
-    }
+    commentListContainer: {}
 });

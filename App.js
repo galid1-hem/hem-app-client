@@ -7,32 +7,13 @@
  */
 
 import React, {useEffect} from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
+import {StatusBar, StyleSheet,} from 'react-native';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {Colors,} from 'react-native/Libraries/NewAppScreen';
 import SplashScreen from 'react-native-splash-screen';
 import Welcome from "./src/screens/WelcomePage";
 
 const App: () => React$Node = () => {
-  useEffect(() => {
-    setTimeout(() => {
-      SplashScreen.hide();
-    }, 1000);
-  });
-
   return (
     <>
       <StatusBar barStyle="dark-content" />
