@@ -1,7 +1,7 @@
 import {StyleSheet, View, Text, TouchableOpacity} from "react-native";
 import * as React from "react";
 import Icon from 'react-native-vector-icons/Ionicons';
-import { theme } from "../Assets/theme/Color";
+import { theme } from "../assets/theme/Color";
 
 
 export default function AddPhotoBtn(props) {

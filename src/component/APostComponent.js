@@ -1,17 +1,19 @@
-import {StyleSheet, TouchableOpacity, SafeAreaView, Text, View } from "react-native";
+import {StyleSheet, TouchableOpacity, SafeAreaView, Text, View} from "react-native";
 import * as React from "react";
-import { theme } from "../Assets/theme/Color";
-import LikeComponent from "./LikeComponent";
-import CommentComponent from "./CommentComponent";
+import {theme} from "../assets/theme/Color";
+import LikeStatusComponent from "./LikeStatusComponent";
+import CommentStatusComponent from "./CommentStatusComponent";
 import UserInfoComponent from "./UserInfoComponent";
+import { useNavigation } from '@react-navigation/native';
 
-export default function APostComponent({item}) {
-    console.log(JSON.stringify(item))
+const APostComponent = ({item}) => {
+    const navigation = useNavigation();
 
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.userInfoContainer}>
-                <UserInfoComponent profileImageUrl={"https://homepages.cae.wisc.edu/~ece533/images/airplane.png"} userName={"테스트 유저"} regionName={"역삼동"} createdAt={"2020/05/10"}/>
+                <UserInfoComponent profileImageUrl={"https://homepages.cae.wisc.edu/~ece533/images/airplane.png"}
+                                   userName={"테스트 유저"} regionName={"역삼동"} createdAt={"2020/05/10"}/>
             </View>
 
             <View style={styles.contentContainer}>
@@ -33,8 +35,14 @@ export default function APostComponent({item}) {
 
             <View style={styles.reactionComponentContainer}>
                 <View style={styles.reactionComponentContentContainer}>
-                    <LikeComponent postId={item.postId} viewerLike={item.viewerLike} likeCount={item.postCounter.likeCount}/>
-                    <CommentComponent commentCount={item.postCounter.commentCount} />
+                    <LikeStatusComponent postId={item.postId} viewerLike={item.viewerLike}
+                                         likeCount={item.postCounter.likeCount}/>
+                    <CommentStatusComponent
+                        onPress={() => navigation.navigate("PostStackNavigator", {
+                            screen: "PostDetails",
+                            params: {post: item}
+                        })}
+                        commentCount={item.postCounter.commentCount}/>
                 </View>
             </View>
         </SafeAreaView>
@@ -57,29 +65,23 @@ const styles = StyleSheet.create({
     },
 
     userInfoContainer: {
-
+        height: 65
     },
 
-    contentContentsContainer: {
-
-    },
+    contentContentsContainer: {},
 
     titleText: {
         fontWeight: "bold",
         fontSize: 17
     },
 
-    textContainer: {
-
-    },
+    textContainer: {},
 
     contentsText: {
         fontSize: 15
     },
 
-    imagesContainer: {
-
-    },
+    imagesContainer: {},
 
     reactionComponentContainer: {
         borderTopColor: theme.colors.border,
@@ -93,3 +95,5 @@ const styles = StyleSheet.create({
         width: "95%"
     }
 });
+
+export default APostComponent;

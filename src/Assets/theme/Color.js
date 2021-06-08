@@ -1,7 +1,8 @@
 const palette = {
-    gray: "#c9c6c5",
+    gray: "#e1e1ea",
+    paleGray: "#D7DADC",
     white: "white",
-    orange: "#ff471a"
+    orange: "#ff471a",
 }
 
 export const theme = {
@@ -12,5 +13,6 @@ export const theme = {
         inActiveIcon: palette.gray,
         normalText: palette.gray,
         activeText: palette.orange,
+        horizontal: palette.paleGray,
     }
 }

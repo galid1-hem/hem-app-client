@@ -1,12 +1,12 @@
 import {StyleSheet, TouchableOpacity, SafeAreaView, Text, View, Image} from "react-native";
 import * as React from "react";
-import {theme} from "../Assets/theme/Color";
+import {theme} from "../assets/theme/Color";
 import Icon from "react-native-vector-icons/FontAwesome5";
 
 export default function UserInfoComponent(props) {
     const renderProfileImage = () => {
         return (
-            props.profileImageUrl
+            props?.profileImageUrl
                 ?
                     <Image
                         source={{uri: props.profileImageUrl}}
@@ -46,8 +46,7 @@ export default function UserInfoComponent(props) {
 
 const styles = StyleSheet.create({
     container: {
-        height: 65,
-        width: '100%',
+        flex: 1,
         justifyContent: "center"
     },
 

@@ -1,11 +1,11 @@
 import * as React from "react";
 import {SafeAreaView, View, Text, StyleSheet, Image, TextInput, FlatList, TouchableOpacity} from "react-native";
 import AddPhotoBtn from "../component/AddPhotoBtn";
-import {theme} from "../Assets/theme/Color";
+import {theme} from "../assets/theme/Color";
 import ImagePicker from "react-native-image-crop-picker";
 import Icon from 'react-native-vector-icons/Ionicons';
 import OkBtn from "../component/OkBtn";
-import urls from "../Assets/network/ServerUrls";
+import urls from "../assets/network/ServerUrls";
 
 function verifyUploadPostCondition(title, contents) {
     return title && contents;

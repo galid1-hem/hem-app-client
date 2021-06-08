@@ -1,10 +1,10 @@
 import {StyleSheet, TouchableOpacity, SafeAreaView, Text, View} from "react-native";
 import * as React from "react";
-import {theme} from "../Assets/theme/Color";
-import urls from "../Assets/network/ServerUrls";
+import {theme} from "../assets/theme/Color";
+import urls from "../assets/network/ServerUrls";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-export default function LikeComponent(props) {
+export default function LikeStatusComponent(props) {
     const [viewerLike, setViewerLike] = React.useState(props.viewerLike);
     const [likeCount, setLikeCount] = React.useState(props.likeCount);
 

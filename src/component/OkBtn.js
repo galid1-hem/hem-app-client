@@ -1,6 +1,6 @@
 import {StyleSheet, TouchableOpacity, SafeAreaView, Text} from "react-native";
 import * as React from "react";
-import { theme } from "../Assets/theme/Color";
+import { theme } from "../assets/theme/Color";
 
 export default function OkBtn(props) {
     const backgroundColor = props.activated
@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
         height: '100%',
+        borderRadius: 3,
     },
 
     btn: {
