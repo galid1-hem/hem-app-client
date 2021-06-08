@@ -38,7 +38,7 @@ const APostComponent = ({item}) => {
                     <LikeStatusComponent postId={item.postId} viewerLike={item.viewerLike}
                                          likeCount={item.postCounter.likeCount}/>
                     <CommentStatusComponent
-                        onPress={() => navigation.navigate("PostDetails", {post: item})}
+                        onPress={() => navigation.navigate("PostDetails", {postId: item.postId})}
                         commentCount={item.postCounter.commentCount}/>
                 </View>
             </View>

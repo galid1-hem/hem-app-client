@@ -8,10 +8,12 @@ import Horizontal from "../component/Horizontal";
 import WriteCommentComponent from "../component/WriteCommentComponent";
 import CommentListComponent from "../component/CommentListComponent";
 import urls from "../assets/network/ServerUrls";
+import {useSelector} from "react-redux";
 
 export default function PostDetailsPage({route, navigation}) {
     const [commentList, setCommentList] = React.useState([]);
-    const post = route.params.post;
+    const postId = route.params.postId;
+    const post = useSelector(state => state.post.posts[postId]);
 
     function fetchCommentList() {
         fetch(urls.postServer + "/" + post.postId + "/comments")
