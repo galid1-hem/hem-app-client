@@ -49,6 +49,18 @@ const initialState = {
 
 export const PostReducer = (state = initialState, action) => {
     switch (action.type) {
+        case UPLOAD_POST:
+            return {
+                ...state,
+                postIds: [
+                    ...state.postIds,
+                    ...action.payload.postId
+                ],
+                posts: {
+                    ...state.posts,
+                    ...action.payload.posts
+                }
+            }
         case LOAD_POST:
             return {
                 ...state,
@@ -74,10 +86,48 @@ export const PostReducer = (state = initialState, action) => {
     }
 }
 
-
+const UPLOAD_POST = "[Post] Calling /posts to upload post";
 const LOAD_POST = "[Post] Calling /posts to load paginated posts";
 const DO_LIKE = "[Like] Calling /posts/{postId}/likes to create or delete like"
 
+
+// ======== upload post
+export const uploadPost = (requestBody) => {
+    return {
+        type: UPLOAD_POST,
+        requestBody: requestBody
+    }
+}
+
+const uploadPostMiddleware = ({dispatch, getState}) => (next) => (action) => {
+    if (action.type !== UPLOAD_POST) return next(action);
+
+    const requestInfo = urls.postServer;
+    fetch(requestInfo, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(action.requestBody)
+    })
+        .then(response => response.json())
+        .then(responseJson => {
+            const createdPost = responseJson.data;
+            const posts = getState().post.posts;
+            posts[createdPost.postId] = createdPost;
+
+            action.payload = {};
+            action.payload.postId = createdPost.postId;
+            action.payload.posts = posts;
+
+            return next(action);
+        })
+        .catch(error => {
+            alert(error.message + "(으)로 인해 업로드에 실패했습니다.");
+        })
+}
+
+// ======== load post
 export const loadNextBatchOfPosts = (size = 20) => {
     return {
         type: LOAD_POST,
@@ -125,6 +175,7 @@ const loadPostMiddleware = ({dispatch, getState}) => (next) => (action) => {
         });
 }
 
+// ======== do like
 export const doLike = (postId) => {
     return {
         type: DO_LIKE,
@@ -173,6 +224,7 @@ const likeMiddleware = ({dispatch, getState}) => (next) => (action) => {
 }
 
 export const PostMiddleware = [
+    uploadPostMiddleware,
     addPaginationToLoadPostsMiddleware,
     loadPostMiddleware,
 ]
@@ -180,4 +232,3 @@ export const PostMiddleware = [
 export const LikeMiddleware = [
     likeMiddleware
 ]
-

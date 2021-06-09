@@ -19,12 +19,12 @@ const APostComponent = ({item}) => {
             <View style={styles.contentContainer}>
                 <View style={{width: '90%'}}>
                     <View style={styles.titleContainer}>
-                        <Text style={styles.titleText}>{item.title}</Text>
+                        <Text style={styles.titleText}>{item?.title}</Text>
                     </View>
 
                     <View style={styles.contentContentsContainer}>
                         <View style={styles.textContainer}>
-                            <Text style={styles.contentsText}>{item.contents[0].value}</Text>
+                            <Text style={styles.contentsText}>{item?.contents[0].value}</Text>
                         </View>
                         <TouchableOpacity style={styles.imagesContainer}>
 
@@ -35,11 +35,11 @@ const APostComponent = ({item}) => {
 
             <View style={styles.reactionComponentContainer}>
                 <View style={styles.reactionComponentContentContainer}>
-                    <LikeStatusComponent postId={item.postId} viewerLike={item.viewerLike}
-                                         likeCount={item.postCounter.likeCount}/>
+                    <LikeStatusComponent postId={item?.postId} viewerLike={item?.viewerLike}
+                                         likeCount={item?.postCounter?.likeCount}/>
                     <CommentStatusComponent
-                        onPress={() => navigation.navigate("PostDetails", {postId: item.postId})}
-                        commentCount={item.postCounter.commentCount}/>
+                        onPress={() => navigation.navigate("PostDetails", {postId: item?.postId})}
+                        commentCount={item?.postCounter?.commentCount}/>
                 </View>
             </View>
         </SafeAreaView>

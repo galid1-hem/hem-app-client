@@ -5,7 +5,8 @@ import {theme} from "../assets/theme/Color";
 import ImagePicker from "react-native-image-crop-picker";
 import Icon from 'react-native-vector-icons/Ionicons';
 import OkBtn from "../component/OkBtn";
-import urls from "../assets/network/ServerUrls";
+import {useDispatch} from "react-redux";
+import {uploadPost} from "../store/post";
 
 function verifyUploadPostCondition(title, contents) {
     return title && contents;
@@ -15,6 +16,7 @@ export default function UploadPostPage({navigation}) {
     const [title, onChangeTitle] = React.useState("");
     const [contents, onChangeContents] = React.useState("");
     const [images, setImages] = React.useState([]);
+    const dispatch = useDispatch();
 
     const renderSelectedImages = ({item, index}) => {
         return (
@@ -48,43 +50,24 @@ export default function UploadPostPage({navigation}) {
         });
     }
 
-    const uploadPost = (title, contents, images) => {
-        if (! verifyUploadPostCondition(title, contents)) return;
-
-        fetch(urls.postServer, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                regionId: 1,
-                title: title,
-                contents: [
-                    {
-                        value: contents,
-                        type: "TEXT"
-                    }
-                ],
-                mediaIds: [
-                    {
-                        id: "TEST_IMAGE",
-                        type: "PHOTO"
-                    }
-                ]
-            })
-        })
-            .then(response => {
-                if (response.ok) {
-                    navigation.navigate("Home");
-                } else {
-                    alert(response.status);
+    const createUploadPostRequestBody = () => {
+        return {
+            regionId: 1,
+            title: title,
+            contents: [
+                {
+                    value: contents,
+                    type: "TEXT"
                 }
-            })
-            .catch(err => {
-                alert(err.message + "(으)로 인해 업로드에 실패했습니다. 잠시 후 다시 시도해주세요.")
-            })
-
-    };
+            ],
+            mediaIds: [
+                {
+                    id: "TEST_IMAGE",
+                    type: "PHOTO"
+                }
+            ]
+        }
+    }
 
     let imageCount = images ? images.length : 0;
 
@@ -121,7 +104,8 @@ export default function UploadPostPage({navigation}) {
             </View>
             <View style={styles.uploadBtnContainer}>
                 <OkBtn onPress={() => {
-                    uploadPost(title, contents, images)
+                    dispatch(uploadPost(createUploadPostRequestBody()));
+                    navigation.navigate("Home");
                 }} activated={verifyUploadPostCondition(title, contents)} text={"게시하기"}/>
             </View>
         </SafeAreaView>

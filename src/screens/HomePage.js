@@ -26,6 +26,7 @@ export default function HomePage({navigation}) {
                 data={state.post.postIds.map(id => state.post.posts[id])}
                 getItemCount={(data) => data?.length}
                 getItem={(data, index) => data[index]}
+                keyExtractor={(item) => item?.postId}
                 renderItem={renderItem}/>
             <PlusBtn onPress={() => navigation.navigate("UploadPost")}/>
         </SafeAreaView>
