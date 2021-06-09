@@ -1,19 +1,27 @@
-import {StyleSheet, TouchableOpacity, SafeAreaView, Text, View} from "react-native";
+import {SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import * as React from "react";
 import {theme} from "../assets/theme/Color";
 import urls from "../assets/network/ServerUrls";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {doLike} from "../store/post";
+import {useDispatch, useSelector} from "react-redux";
 
 export default function LikeStatusComponent(props) {
-    const [viewerLike, setViewerLike] = React.useState(props.viewerLike);
-    const [likeCount, setLikeCount] = React.useState(props.likeCount);
+    // const [viewerLike, setViewerLike] = React.useState(props.viewerLike);
+    // const [likeCount, setLikeCount] = React.useState(props.likeCount);
+
+    const state = useSelector((state) => state);
+    const dispatch = useDispatch();
+    let likeCount = state.post.posts[props.postId].postCounter.likeCount;
+    let viewerLike = state.post.posts[props.postId].viewerLike;
 
     const onPressLikeBtn = () => {
-        if (viewerLike?.likeId) {
-            requestDeleteLike();
-        } else {
-            requestCreateLike();
-        }
+        // if (viewerLike?.likeId) {
+        //     requestDeleteLike();
+        // } else {
+        //     requestCreateLike();
+        // }
+        dispatch(doLike(props.postId));
     }
 
     const requestCreateLike = () => {

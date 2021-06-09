@@ -25,8 +25,6 @@ export default function PostDetailsPage({route, navigation}) {
         fetchCommentList();
     }, [])
 
-    console.log("post : ", JSON.stringify(post))
-
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.userInfoContainer}>

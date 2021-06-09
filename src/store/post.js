@@ -1,46 +1,46 @@
 import urls from "../assets/network/ServerUrls";
 
-const object1 = {
-    postList: [
-        {
-            postId: "",
-            userId: "",
-            regionId: "",
-            title: "",
-            contents: [
-                {
-                    value: "",
-                    type: "TEXT"
-                }
-            ],
-            mediaIds: [
-                {
-                    id: "",
-                    type: "PHOTO"
-                }
-            ],
-            postCounter: {
-                likeCount: 0,
-                commentCount: 0,
-                bookmarkCount: 0,
-                viewCount: 0,
-            },
-            viewerLike: {
-                likeId: "",
-                postId: "",
-                actor: {
-                    actorId: "",
-                    profileImageUrl: "",
-                    relationType: "ME"
-                }
-            },
-            visible: "true",
-            createdAt: "",
-            updatedAt: "",
-            deletedAt: ""
-        }
-    ]
-}
+// const object1 = {
+//     postList: [
+//         {
+//             postId: "",
+//             userId: "",
+//             regionId: "",
+//             title: "",
+//             contents: [
+//                 {
+//                     value: "",
+//                     type: "TEXT"
+//                 }
+//             ],
+//             mediaIds: [
+//                 {
+//                     id: "",
+//                     type: "PHOTO"
+//                 }
+//             ],
+//             postCounter: {
+//                 likeCount: 0,
+//                 commentCount: 0,
+//                 bookmarkCount: 0,
+//                 viewCount: 0,
+//             },
+//             viewerLike: {
+//                 likeId: "",
+//                 postId: "",
+//                 actor: {
+//                     actorId: "",
+//                     profileImageUrl: "",
+//                     relationType: "ME"
+//                 }
+//             },
+//             visible: "true",
+//             createdAt: "",
+//             updatedAt: "",
+//             deletedAt: ""
+//         }
+//     ]
+// }
 
 const initialState = {
     postIds: [],
@@ -62,6 +62,13 @@ export const PostReducer = (state = initialState, action) => {
                 }
 
             }
+        case DO_LIKE:
+            return {
+                ...state,
+                posts: {
+                    ...state.posts,
+                }
+            }
         default:
             return state;
     }
@@ -69,9 +76,9 @@ export const PostReducer = (state = initialState, action) => {
 
 
 const LOAD_POST = "[Post] Calling /posts to load paginated posts";
+const DO_LIKE = "[Like] Calling /posts/{postId}/likes to create or delete like"
 
 export const loadNextBatchOfPosts = (size = 20) => {
-    console.log("creating an action")
     return {
         type: LOAD_POST,
         size: size
@@ -79,7 +86,6 @@ export const loadNextBatchOfPosts = (size = 20) => {
 }
 
 const addPaginationToLoadPostsMiddleware = ({dispatch, getState}) => (next) => (action) => {
-    console.log("md1")
     if (action.type !== LOAD_POST) return next(action);
 
     const postIds = getState().post.postIds;
@@ -91,9 +97,7 @@ const addPaginationToLoadPostsMiddleware = ({dispatch, getState}) => (next) => (
 }
 
 const loadPostMiddleware = ({dispatch, getState}) => (next) => (action) => {
-    console.log("md2")
     if (action.type !== LOAD_POST) return next(action);
-
 
     let requestInfo = urls.postServer + "?size=" + action.size + "&";
     if (action.lastPostId != undefined) {
@@ -105,7 +109,7 @@ const loadPostMiddleware = ({dispatch, getState}) => (next) => (action) => {
         .then(responseJson => {
             action.payload = {};
 
-            // TODO when server has no posts
+            // TODO add process when server has no posts
             const postIds = responseJson.data.map(post => post.postId);
             const posts = {};
             responseJson.data.forEach(post => {
@@ -114,7 +118,6 @@ const loadPostMiddleware = ({dispatch, getState}) => (next) => (action) => {
             action.payload.postIds = postIds;
             action.payload.posts = posts;
 
-            console.log("good")
             return next(action);
         })
         .catch(error => {
@@ -122,9 +125,59 @@ const loadPostMiddleware = ({dispatch, getState}) => (next) => (action) => {
         });
 }
 
+export const doLike = (postId) => {
+    return {
+        type: DO_LIKE,
+        postId: postId
+    }
+}
+
+const likeMiddleware = ({dispatch, getState}) => (next) => (action) => {
+    if (action.type !== DO_LIKE) return next(action);
+
+    let httpMethod = {method: "POST"};
+    let requestInfo = urls.postServer + "/" + action.postId + "/likes";
+
+    const postViewerLike = getState().post.posts[action.postId].viewerLike;
+
+    if (postViewerLike != null) {
+        httpMethod.method = "DELETE";
+        requestInfo += "/" + postViewerLike.likeId;
+    }
+
+    fetch(requestInfo, httpMethod)
+        .then(response => response.json())
+        .then(responseJson => {
+            action.payload = {};
+            const posts = getState().post.posts;
+            const viewerLike = responseJson.data;
+
+            // createLike
+            if (viewerLike != null) {
+                posts[action.postId].viewerLike = viewerLike;
+                posts[action.postId].postCounter.likeCount += 1;
+            }
+            // deleteLike
+            else {
+                posts[action.postId].viewerLike = null;
+                posts[action.postId].postCounter.likeCount -= 1;
+            }
+
+            action.payload.posts = posts;
+            return next(action);
+        })
+        .catch(error => {
+            console.log("error !: ", error)
+        })
+
+}
+
 export const PostMiddleware = [
     addPaginationToLoadPostsMiddleware,
     loadPostMiddleware,
 ]
 
+export const LikeMiddleware = [
+    likeMiddleware
+]
 

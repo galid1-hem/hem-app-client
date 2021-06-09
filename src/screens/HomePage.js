@@ -17,7 +17,7 @@ export default function HomePage({navigation}) {
     };
 
     React.useEffect(()=>{
-        dispatch(loadNextBatchOfPosts(10));
+        dispatch(loadNextBatchOfPosts(20));
     }, [])
 
     return (
@@ -27,7 +27,7 @@ export default function HomePage({navigation}) {
                 getItemCount={(data) => data?.length}
                 getItem={(data, index) => data[index]}
                 renderItem={renderItem}/>
-            <PlusBtn onPress={() => navigation.navigate("UploadPost", {params: {callback: getPostList(lastPostId)}})}/>
+            <PlusBtn onPress={() => navigation.navigate("UploadPost")}/>
         </SafeAreaView>
     )
 }

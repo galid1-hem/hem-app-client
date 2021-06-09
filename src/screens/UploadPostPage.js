@@ -76,7 +76,6 @@ export default function UploadPostPage({navigation}) {
             .then(response => {
                 if (response.ok) {
                     navigation.navigate("Home");
-                    console.log(navigation.getParameter("callback"));
                 } else {
                     alert(response.status);
                 }
