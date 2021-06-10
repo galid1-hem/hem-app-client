@@ -1,0 +1,2 @@
+export const DEFAULT_FECTH_POST_SIZE = 20;
+export const DEFAULT_FETCH_COMMENT_SIZE = 20;

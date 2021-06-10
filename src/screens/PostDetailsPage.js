@@ -7,30 +7,25 @@ import UserInfoComponent from "../component/UserInfoComponent";
 import Horizontal from "../component/Horizontal";
 import WriteCommentComponent from "../component/WriteCommentComponent";
 import CommentListComponent from "../component/CommentListComponent";
-import urls from "../assets/network/ServerUrls";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {loadNextBatchOfComments} from "../store/post";
 
 export default function PostDetailsPage({route, navigation}) {
-    const [commentList, setCommentList] = React.useState([]);
+    // const [commentList, setCommentList] = React.useState([]);
     const postId = route.params.postId;
     const post = useSelector(state => state.post.posts[postId]);
-
-    function fetchCommentList() {
-        fetch(urls.postServer + "/" + post.postId + "/comments")
-            .then(response => response.json())
-            .then(responseJson => setCommentList(responseJson.data));
-    }
+    const commentList = useSelector(state => state.post.comments[postId]?.comments);
+    const dispatch = useDispatch();
 
     React.useEffect(() => {
-        fetchCommentList();
-    }, [])
+        dispatch(loadNextBatchOfComments(postId));
+    }, []);
 
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.userInfoContainer}>
                 <UserInfoComponent profileImageUrl={"https://homepages.cae.wisc.edu/~ece533/images/airplane.png"}
                                    userName={"디테일 페이지"} regionName={"역삼동"} createdAt={"2020/05/10"}/>
-
             </View>
 
             <View style={styles.contentContainer}>
@@ -41,7 +36,7 @@ export default function PostDetailsPage({route, navigation}) {
 
                     <View style={styles.contentContentsContainer}>
                         <View style={styles.textContainer}>
-                            <Text style={styles.contentsText}>{post.contents[0].value}</Text>
+                            <Text style={styles.contentsText}>{post?.contents?[0]?.value:""}</Text>
                         </View>
                         <TouchableOpacity style={styles.imagesContainer}>
 
@@ -62,7 +57,7 @@ export default function PostDetailsPage({route, navigation}) {
 
             <View style={styles.commentListContainer}>
                 <WriteCommentComponent placeHolderText={"댓글을 입력해 주세요."}/>
-                <CommentListComponent commentList={commentList}/>
+                <CommentListComponent postId={postId} commentList={commentList}/>
             </View>
         </SafeAreaView>
     );

@@ -14,14 +14,14 @@ export default function WriteCommentComponent(props) {
            <View style={styles.contentContainer}>
                <TouchableOpacity style={styles.touchableContentContainer} onPress={() => navigation.navigate("Comment")}>
                    <View style={styles.iconContainer}>
-                       <Icon name={"picture-o"} size={20} />
+                       <Icon name={"picture-o"} size={20} color={theme.colors.inActiveIcon} />
                    </View>
                    <View style={styles.placeHolderTextContainer}>
-                       <Text>{props.placeHolderText}</Text>
+                       <Text style={{color: theme.colors.normalText}}>{props.placeHolderText}</Text>
                    </View>
                </TouchableOpacity>
                <View style={styles.publishBtnContainer}>
-                   <OkBtn text={"등록"}/>
+                   <OkBtn activated={props.publishable} text={"등록"}/>
                </View>
            </View>
        </SafeAreaView>

@@ -1,7 +1,6 @@
 import * as React from "react";
-import {SafeAreaView, StyleSheet, VirtualizedList, Text} from "react-native";
+import {SafeAreaView, StyleSheet, VirtualizedList} from "react-native";
 import PlusBtn from "../component/PlusBtn";
-import urls from "../assets/network/ServerUrls";
 import APostComponent from "../component/APostComponent";
 import {useDispatch, useSelector} from "react-redux";
 import {loadNextBatchOfPosts} from "../store/post";

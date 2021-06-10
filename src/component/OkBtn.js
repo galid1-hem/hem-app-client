@@ -4,7 +4,7 @@ import { theme } from "../assets/theme/Color";
 
 export default function OkBtn(props) {
     const backgroundColor = props.activated
-        ? theme.colors.activeBtnBackground
+        ? theme.colors.paleActiveBtnBackground
         : theme.colors.inActiveIcon;
 
     return (

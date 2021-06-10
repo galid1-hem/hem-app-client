@@ -1,4 +1,5 @@
 import urls from "../assets/network/ServerUrls";
+import {DEFAULT_FECTH_POST_SIZE, DEFAULT_FETCH_COMMENT_SIZE} from "../const/FetchSize";
 
 // const object1 = {
 //     postList: [
@@ -44,8 +45,9 @@ import urls from "../assets/network/ServerUrls";
 
 const initialState = {
     postIds: [],
-    posts: {}
-}
+    posts: {}, // postId: Post
+    comments: {} // postId: Comments
+};
 
 export const PostReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -81,6 +83,26 @@ export const PostReducer = (state = initialState, action) => {
                     ...state.posts,
                 }
             }
+        case LOAD_COMMENT:
+            const newComments = {
+                ...state.comments,
+            };
+            newComments[action.postId] = {};
+            newComments[action.postId].comments = {
+                ...newComments[action.postId]?.comments,
+                ...action.payload.comments
+            }
+            let commentIds = newComments[action.postId]?.commentIds;
+            if (commentIds === undefined) commentIds = [];
+            newComments[action.postId].commentIds = [
+                ...commentIds,
+                ...action.payload.commentIds
+            ];
+
+            return {
+                ...state,
+                comments: newComments
+            }
         default:
             return state;
     }
@@ -88,8 +110,9 @@ export const PostReducer = (state = initialState, action) => {
 
 const UPLOAD_POST = "[Post] Calling /posts to upload post";
 const LOAD_POST = "[Post] Calling /posts to load paginated posts";
-const DO_LIKE = "[Like] Calling /posts/{postId}/likes to create or delete like"
-
+const DO_LIKE = "[Like] Calling /posts/{postId}/likes to create or delete like";
+const LOAD_COMMENT = "[Comment] Calling /posts/{postId}/comments to load comments of a post";
+const CREATE_COMMENT = "[Comment] Calling /posts/{postId}/comments to create comment";
 
 // ======== upload post
 export const uploadPost = (requestBody) => {
@@ -128,7 +151,7 @@ const uploadPostMiddleware = ({dispatch, getState}) => (next) => (action) => {
 }
 
 // ======== load post
-export const loadNextBatchOfPosts = (size = 20) => {
+export const loadNextBatchOfPosts = (size = DEFAULT_FECTH_POST_SIZE) => {
     return {
         type: LOAD_POST,
         size: size
@@ -218,10 +241,57 @@ const likeMiddleware = ({dispatch, getState}) => (next) => (action) => {
             return next(action);
         })
         .catch(error => {
-            console.log("error !: ", error)
+            alert("error occur when do like : ", error);
         })
 
 }
+
+// ======= load Comment
+export const loadNextBatchOfComments = (postId, size = DEFAULT_FETCH_COMMENT_SIZE) => {
+    return {
+        type: LOAD_COMMENT,
+        postId: postId,
+        size: size
+    }
+}
+
+const addPaginationToLoadCommentsMiddleware = ({dispatch, getState}) => (next) => (action) => {
+    if (action.type !== LOAD_COMMENT) return next(action);
+
+    const commentIds = getState().post.comments?[action.postId]?.commentIds: [];
+    if (commentIds === undefined || commentIds.length === 0) {
+        return next(action);
+    }
+
+    action.lastCommentId = commentIds[commentIds.length - 1];
+    return next(action);
+}
+
+const loadCommentsMiddleware = ({dispatch, getState}) => (next) => (action) => {
+    if (action.type !== LOAD_COMMENT) return next(action);
+
+    let requestInfo = urls.postServer + "/" + action.postId + "/comments?size=" + action.size + "&";
+    if (action.lastCommentId !== undefined) {
+        requestInfo += "lastCommentId=" + action.lastCommentId + "&";
+    }
+
+    fetch(requestInfo)
+        .then(response => response.json())
+        .then(responseJson => {
+            action.payload = {};
+
+            const comments = {};
+            responseJson.data.forEach(comment => {
+                comments[comment.commentId] = comment;
+            });
+            const commentIds = responseJson.data.map(comment => comment.commentId);
+            action.payload.comments = comments;
+            action.payload.commentIds = commentIds;
+            return next(action);
+        })
+        .catch(error => alert("error occur when loading comments! : " + error));
+}
+
 
 export const PostMiddleware = [
     uploadPostMiddleware,
@@ -231,4 +301,9 @@ export const PostMiddleware = [
 
 export const LikeMiddleware = [
     likeMiddleware
+]
+
+export const CommentMiddleware = [
+    addPaginationToLoadCommentsMiddleware,
+    loadCommentsMiddleware
 ]

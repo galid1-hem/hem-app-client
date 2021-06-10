@@ -1,5 +1,5 @@
 // import StackNavigator from "@react-navigation/stack/src/navigators/createStackNavigator";
-// import CommentPage from "../screens/CommentPage";
+// import WriteCommentPage from "../screens/WriteCommentPage";
 // import * as React from "react";
 // import {createStackNavigator} from "@react-navigation/stack";
 // import PostDetailsPage from "../screens/PostDetailsPage";
@@ -10,7 +10,7 @@
 //     return (
 //         <Stack.Navigator >
 //             <Stack.Screen name={"PostDetails"} component={PostDetailsPage}/>
-//             <Stack.Screen name={"Comment"} component={CommentPage}/>
+//             <Stack.Screen name={"Comment"} component={WriteCommentPage}/>
 //         </Stack.Navigator>
 //     )
 // }

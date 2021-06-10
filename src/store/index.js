@@ -1,5 +1,5 @@
 import {applyMiddleware, combineReducers, createStore} from "redux";
-import {PostMiddleware, LikeMiddleware, PostReducer} from "./post";
+import {PostMiddleware, LikeMiddleware, PostReducer, CommentMiddleware} from "./post";
 
 const reducer = combineReducers({
     post: PostReducer
@@ -7,7 +7,8 @@ const reducer = combineReducers({
 
 const middleware = [
     ...PostMiddleware,
-    ...LikeMiddleware
+    ...LikeMiddleware,
+    ...CommentMiddleware
 ]
 
 const store = createStore(reducer, applyMiddleware(...middleware));

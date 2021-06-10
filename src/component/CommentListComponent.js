@@ -1,8 +1,11 @@
 import {StyleSheet, SafeAreaView, View, Text, VirtualizedList} from "react-native";
 import * as React from "react";
 import ACommentComponent from "./ACommentComponent";
+import {useSelector} from "react-redux";
 
 export default function CommentListComponent(props) {
+    const commentIds = useSelector(state => state.post?.comments[props.postId]?.commentIds);
+
     function renderItem({item}) {
         return (
             <ACommentComponent item={item}/>
@@ -10,15 +13,12 @@ export default function CommentListComponent(props) {
     }
 
     const { commentList } = props;
-
-    console.log(JSON.stringify(props.commentList));
-
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.contentContainer}>
                 <VirtualizedList
                     style={{height: "100%"}}
-                    data={commentList}
+                    data={commentIds?.map(commentId => commentList[commentId])}
                     getItemCount={(data) => data?.length}
                     getItem={(data, index) => data[index]}
                     renderItem={renderItem}
