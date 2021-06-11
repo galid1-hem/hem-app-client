@@ -55,14 +55,14 @@ export const PostReducer = (state = initialState, action) => {
             return {
                 ...state,
                 postIds: [
+                    action.payload.post.postId,
                     ...state.postIds,
-                    ...action.payload.postId
                 ],
                 posts: {
-                    ...state.posts,
-                    ...action.payload.posts
+                    [action.payload.post.postId]: action.payload.post,
+                    ...state.posts
                 }
-            }
+            };
         case LOAD_POST:
             return {
                 ...state,
@@ -84,29 +84,33 @@ export const PostReducer = (state = initialState, action) => {
                 }
             }
         case LOAD_COMMENT:
-            const newComments = {
-                ...state.comments,
-            };
-            newComments[action.postId] = {};
-            newComments[action.postId].comments = {
-                ...newComments[action.postId]?.comments,
-                ...action.payload.comments
-            }
-            let commentIds = newComments[action.postId]?.commentIds;
-            if (commentIds === undefined) commentIds = [];
-            newComments[action.postId].commentIds = [
-                ...commentIds,
-                ...action.payload.commentIds
-            ];
-
             return {
                 ...state,
-                comments: newComments
+                comments: {
+                    ...action.payload.comments
+                }
             };
         case CREATE_COMMENT:
+            const posts = {
+                ...state.posts,
+            }
+            posts[action.postId].postCounter.commentCount += 1;
             return {
                 ...state,
-                comments: action.payload.comments
+                ...posts,
+                comments: {
+                    ...state.comments,
+                    [action.postId]: {
+                        comments: {
+                            ...state.comments[action.postId].comments,
+                            [action.payload.comment.commentId]: action.payload.comment
+                        },
+                        commentIds: [
+                            ...state.comments[action.postId].commentIds,
+                            action.payload.comment.commentId
+                        ]
+                    }
+                }
             };
         default:
             return state;
@@ -141,12 +145,9 @@ const uploadPostMiddleware = ({dispatch, getState}) => (next) => (action) => {
         .then(response => response.json())
         .then(responseJson => {
             const createdPost = responseJson.data;
-            const posts = getState().post.posts;
-            posts[createdPost.postId] = createdPost;
 
             action.payload = {};
-            action.payload.postId = createdPost.postId;
-            action.payload.posts = posts;
+            action.payload.post = createdPost;
 
             return next(action);
         })
@@ -217,7 +218,8 @@ const likeMiddleware = ({dispatch, getState}) => (next) => (action) => {
     let httpMethod = {method: "POST"};
     let requestInfo = urls.postServer + "/" + action.postId + "/likes";
 
-    const postViewerLike = getState().post.posts?[action.postId]?.viewerLike: {};
+    const postViewerLike = getState().post.posts ? [action.postId]?.viewerLike : {};
+    console.log("postVIewerlike : ", postViewerLike);
 
     if (postViewerLike != null) {
         httpMethod.method = "DELETE";
@@ -263,7 +265,7 @@ export const loadNextBatchOfComments = (postId, size = DEFAULT_FETCH_COMMENT_SIZ
 const addPaginationToLoadCommentsMiddleware = ({dispatch, getState}) => (next) => (action) => {
     if (action.type !== LOAD_COMMENT) return next(action);
 
-    const commentIds = getState().post.comments?[action.postId]?.commentIds: [];
+    const commentIds = getState().post.comments ? [action.postId]?.commentIds : [];
     if (commentIds === undefined || commentIds.length === 0) {
         return next(action);
     }
@@ -283,15 +285,32 @@ const loadCommentsMiddleware = ({dispatch, getState}) => (next) => (action) => {
     fetch(requestInfo)
         .then(response => response.json())
         .then(responseJson => {
-            action.payload = {};
+            const loadedComments = responseJson.data;
+            const loadedCommentIds = loadedComments.map(comment => comment.commentId);
+            const loadedCommentIdToCommentMap = {};
+            loadedComments.forEach(comment => loadedCommentIdToCommentMap[comment.commentId] = comment);
 
-            const comments = {};
-            responseJson.data.forEach(comment => {
-                comments[comment.commentId] = comment;
-            });
-            const commentIds = responseJson.data.map(comment => comment.commentId);
-            action.payload.comments = comments;
-            action.payload.commentIds = commentIds;
+            const allComments = getState().post.comments;
+            let postComments = allComments[action.postId]?.comment;
+            let postCommentIds = allComments[action.postId]?.commentIds;
+            if (postComments === undefined) {
+                postComments = {};
+                postCommentIds = [];
+            }
+
+            allComments[action.postId] = {
+                comments: {
+                    ...postComments,
+                    ...loadedCommentIdToCommentMap
+                },
+                commentIds: [
+                    ...postCommentIds,
+                    ...loadedCommentIds
+                ]
+            };
+
+            action.payload = {};
+            action.payload.comments = allComments;
 
             return next(action);
         })
@@ -309,6 +328,7 @@ export const createComment = (postId, requestBody) => {
 
 const createCommentMiddleware = ({dispatch, getState}) => (next) => (action) => {
     if (action.type !== CREATE_COMMENT) return next(action);
+
     const requestInfo = urls.postServer + "/" + action.postId + "/comments";
     fetch(requestInfo, {
         method: "POST",
@@ -321,18 +341,8 @@ const createCommentMiddleware = ({dispatch, getState}) => (next) => (action) => 
         .then(responseJson => {
             const createdComment = responseJson.data;
 
-            const allComments = getState().post.comments;
-            allComments[action.postId].comments = {
-                ...allComments[action.postId].comments,
-                createdComment
-            };
-            allComments[action.postId].commentIds = [
-                ...allComments[action.postId].commentIds,
-                createdComment.commentId
-            ]
-
             action.payload = {};
-            action.payload.comments = allComments;
+            action.payload.comment = createdComment;
 
             return next(action);
         })

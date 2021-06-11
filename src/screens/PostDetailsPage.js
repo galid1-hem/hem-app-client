@@ -16,6 +16,8 @@ export default function PostDetailsPage({route, navigation}) {
     const post = posts[postId];
     const comments = useSelector(state => state.post.comments[postId]);
 
+    console.log("in postdetils : ", comments?.commentIds);
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.userInfoContainer}>
