@@ -1,9 +1,12 @@
-import {StyleSheet, TouchableOpacity, SafeAreaView, Text, View, Image} from "react-native";
+import {Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import * as React from "react";
 import {theme} from "../assets/theme/Color";
 import Icon from "react-native-vector-icons/FontAwesome5";
+import PostMenuComponent from "./PostMenuComponent";
 
 export default function UserInfoComponent(props) {
+    const [ menuVisible, setMenuVisible ] = React.useState(false);
+
     const renderProfileImage = () => {
         return (
             props?.profileImageUrl
@@ -31,9 +34,10 @@ export default function UserInfoComponent(props) {
                     <Text style={styles.sideInfoText}>{props.createdAt}</Text>
                 </View>
             </View>
-            <View>
+            <TouchableOpacity onPress={() => setMenuVisible(true)}>
                 <Text>m</Text>
-            </View>
+                <PostMenuComponent closeMenu={() => setMenuVisible(false)} visible={menuVisible}/>
+            </TouchableOpacity>
         </SafeAreaView>
     );
 }

@@ -7,6 +7,7 @@ import UserInfoComponent from "./UserInfoComponent";
 import {useNavigation} from '@react-navigation/native';
 import {loadNextBatchOfComments} from "../store/post";
 import {useDispatch} from "react-redux";
+import PostMenuComponent from "./PostMenuComponent";
 
 const APostComponent = ({post}) => {
     const dispatch = useDispatch();
@@ -20,7 +21,9 @@ const APostComponent = ({post}) => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.userInfoContainer}>
-                <UserInfoComponent profileImageUrl={"https://homepages.cae.wisc.edu/~ece533/images/airplane.png"}
+                <UserInfoComponent
+                    menuComponent={PostMenuComponent}
+                    profileImageUrl={"https://homepages.cae.wisc.edu/~ece533/images/airplane.png"}
                                    userName={"테스트 유저"} regionName={"역삼동"} createdAt={"2020/05/10"}/>
             </View>
 
