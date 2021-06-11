@@ -10,8 +10,6 @@ export default function CommentListComponent(props) {
     }
 
     const { commentIds, comments } = props;
-    console.log("incommentList comments: ",  comments);
-    console.log("incommentList commentIds: ", commentIds);
 
     return (
         <SafeAreaView style={styles.container}>

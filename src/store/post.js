@@ -218,8 +218,7 @@ const likeMiddleware = ({dispatch, getState}) => (next) => (action) => {
     let httpMethod = {method: "POST"};
     let requestInfo = urls.postServer + "/" + action.postId + "/likes";
 
-    const postViewerLike = getState().post.posts ? [action.postId]?.viewerLike : {};
-    console.log("postVIewerlike : ", postViewerLike);
+    const postViewerLike = getState().post.posts[action.postId]?.viewerLike;
 
     if (postViewerLike != null) {
         httpMethod.method = "DELETE";
