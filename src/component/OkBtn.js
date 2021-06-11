@@ -9,7 +9,9 @@ export default function OkBtn(props) {
 
     return (
         <SafeAreaView style={{backgroundColor: backgroundColor, ...styles.container}}>
-            <TouchableOpacity style={styles.btn} onPress={props.onPress} activeOpacity={0.7}>
+            <TouchableOpacity style={styles.btn} onPress={() => {
+                if(props.activated) props.onPress();
+            }} activeOpacity={0.7}>
                 <Text style={styles.text} >{props.text}</Text>
             </TouchableOpacity>
         </SafeAreaView>

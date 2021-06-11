@@ -3,16 +3,13 @@ import * as React from "react";
 import OkBtn from "./OkBtn";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {theme} from "../assets/theme/Color";
-import { useNavigation } from '@react-navigation/native';
 
 
 export default function WriteCommentComponent(props) {
-    const navigation = useNavigation();
-
     return (
        <SafeAreaView style={styles.container}>
            <View style={styles.contentContainer}>
-               <TouchableOpacity style={styles.touchableContentContainer} onPress={() => navigation.navigate("Comment")}>
+               <TouchableOpacity style={styles.touchableContentContainer} onPress={props.onPress}>
                    <View style={styles.iconContainer}>
                        <Icon name={"picture-o"} size={20} color={theme.colors.inActiveIcon} />
                    </View>
@@ -21,7 +18,7 @@ export default function WriteCommentComponent(props) {
                    </View>
                </TouchableOpacity>
                <View style={styles.publishBtnContainer}>
-                   <OkBtn activated={props.publishable} text={"등록"}/>
+                   <OkBtn onPress={props.onPress} activated={props.publishable} text={"등록"}/>
                </View>
            </View>
        </SafeAreaView>

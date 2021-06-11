@@ -11,7 +11,7 @@ export default function HomePage({navigation}) {
 
     const renderItem = ({item}) => {
         return (
-            <APostComponent item={item}/>
+            <APostComponent post={item}/>
         )
     };
 
@@ -22,7 +22,7 @@ export default function HomePage({navigation}) {
     return (
         <SafeAreaView style={styles.container}>
             <VirtualizedList
-                data={state.post.postIds.map(id => state.post.posts[id])}
+                data={state.post?.postIds?.map(id => state.post.posts[id])}
                 getItemCount={(data) => data?.length}
                 getItem={(data, index) => data[index]}
                 keyExtractor={(item) => item?.postId}

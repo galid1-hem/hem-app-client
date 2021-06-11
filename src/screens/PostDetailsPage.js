@@ -7,19 +7,14 @@ import UserInfoComponent from "../component/UserInfoComponent";
 import Horizontal from "../component/Horizontal";
 import WriteCommentComponent from "../component/WriteCommentComponent";
 import CommentListComponent from "../component/CommentListComponent";
-import {useDispatch, useSelector} from "react-redux";
-import {loadNextBatchOfComments} from "../store/post";
+import {useSelector} from "react-redux";
 
 export default function PostDetailsPage({route, navigation}) {
     // const [commentList, setCommentList] = React.useState([]);
     const postId = route.params.postId;
-    const post = useSelector(state => state.post.posts[postId]);
-    const commentList = useSelector(state => state.post.comments[postId]?.comments);
-    const dispatch = useDispatch();
-
-    React.useEffect(() => {
-        dispatch(loadNextBatchOfComments(postId));
-    }, []);
+    const posts = useSelector(state => state.post.posts);
+    const post = posts[postId];
+    const comments = useSelector(state => state.post.comments[postId]);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -56,8 +51,8 @@ export default function PostDetailsPage({route, navigation}) {
             <Horizontal/>
 
             <View style={styles.commentListContainer}>
-                <WriteCommentComponent placeHolderText={"댓글을 입력해 주세요."}/>
-                <CommentListComponent postId={postId} commentList={commentList}/>
+                <WriteCommentComponent onPress={() => navigation.navigate("Comment", {postId: postId})} placeHolderText={"댓글을 입력해 주세요."}/>
+                <CommentListComponent postId={postId} comments={comments?.comments} commentIds={comments?.commentIds} />
             </View>
         </SafeAreaView>
     );

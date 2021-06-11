@@ -1,13 +1,21 @@
-import {StyleSheet, TouchableOpacity, SafeAreaView, Text, View} from "react-native";
+import {SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import * as React from "react";
 import {theme} from "../assets/theme/Color";
 import LikeStatusComponent from "./LikeStatusComponent";
 import CommentStatusComponent from "./CommentStatusComponent";
 import UserInfoComponent from "./UserInfoComponent";
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
+import {loadNextBatchOfComments} from "../store/post";
+import {useDispatch} from "react-redux";
 
-const APostComponent = ({item}) => {
+const APostComponent = ({post}) => {
+    const dispatch = useDispatch();
     const navigation = useNavigation();
+
+    const onPressCommentStatusComponent = () => {
+        dispatch(loadNextBatchOfComments(post?.postId));
+        navigation.navigate("PostDetails", {postId: post?.postId});
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -19,12 +27,12 @@ const APostComponent = ({item}) => {
             <View style={styles.contentContainer}>
                 <View style={{width: '90%'}}>
                     <View style={styles.titleContainer}>
-                        <Text style={styles.titleText}>{item?.title}</Text>
+                        <Text style={styles.titleText}>{post?.title}</Text>
                     </View>
 
                     <View style={styles.contentContentsContainer}>
                         <View style={styles.textContainer}>
-                            <Text style={styles.contentsText}>{item?.contents[0].value}</Text>
+                            <Text style={styles.contentsText}>{post?.contents[0].value}</Text>
                         </View>
                         <TouchableOpacity style={styles.imagesContainer}>
 
@@ -35,11 +43,11 @@ const APostComponent = ({item}) => {
 
             <View style={styles.reactionComponentContainer}>
                 <View style={styles.reactionComponentContentContainer}>
-                    <LikeStatusComponent postId={item?.postId} viewerLike={item?.viewerLike}
-                                         likeCount={item?.postCounter?.likeCount}/>
+                    <LikeStatusComponent postId={post?.postId} viewerLike={post?.viewerLike}
+                                         likeCount={post?.postCounter?.likeCount}/>
                     <CommentStatusComponent
-                        onPress={() => navigation.navigate("PostDetails", {postId: item?.postId})}
-                        commentCount={item?.postCounter?.commentCount}/>
+                        onPress={onPressCommentStatusComponent}
+                        commentCount={post?.postCounter?.commentCount}/>
                 </View>
             </View>
         </SafeAreaView>

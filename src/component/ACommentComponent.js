@@ -3,7 +3,7 @@ import * as React from "react";
 import UserInfoComponent from "./UserInfoComponent";
 
 export default function ACommentComponent(props) {
-    console.log("item : ", props.item);
+    const comment = props.comment;
 
     return (
         <SafeAreaView style={styles.container}>
@@ -12,7 +12,7 @@ export default function ACommentComponent(props) {
             </View>
             <View style={styles.commentContainer}>
                 <Text>
-                    {props.item.contents[0].value}
+                    {comment.contents[0].value}
                 </Text>
             </View>
             <TouchableOpacity>

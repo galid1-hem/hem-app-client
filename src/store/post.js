@@ -102,7 +102,12 @@ export const PostReducer = (state = initialState, action) => {
             return {
                 ...state,
                 comments: newComments
-            }
+            };
+        case CREATE_COMMENT:
+            return {
+                ...state,
+                comments: action.payload.comments
+            };
         default:
             return state;
     }
@@ -212,7 +217,7 @@ const likeMiddleware = ({dispatch, getState}) => (next) => (action) => {
     let httpMethod = {method: "POST"};
     let requestInfo = urls.postServer + "/" + action.postId + "/likes";
 
-    const postViewerLike = getState().post.posts[action.postId].viewerLike;
+    const postViewerLike = getState().post.posts?[action.postId]?.viewerLike: {};
 
     if (postViewerLike != null) {
         httpMethod.method = "DELETE";
@@ -287,9 +292,53 @@ const loadCommentsMiddleware = ({dispatch, getState}) => (next) => (action) => {
             const commentIds = responseJson.data.map(comment => comment.commentId);
             action.payload.comments = comments;
             action.payload.commentIds = commentIds;
+
             return next(action);
         })
         .catch(error => alert("error occur when loading comments! : " + error));
+}
+
+// ===== CREATE COMMENT
+export const createComment = (postId, requestBody) => {
+    return {
+        type: CREATE_COMMENT,
+        postId: postId,
+        requestBody: requestBody
+    }
+}
+
+const createCommentMiddleware = ({dispatch, getState}) => (next) => (action) => {
+    if (action.type !== CREATE_COMMENT) return next(action);
+    const requestInfo = urls.postServer + "/" + action.postId + "/comments";
+    fetch(requestInfo, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(action.requestBody)
+    })
+        .then(response => response.json())
+        .then(responseJson => {
+            const createdComment = responseJson.data;
+
+            const allComments = getState().post.comments;
+            allComments[action.postId].comments = {
+                ...allComments[action.postId].comments,
+                createdComment
+            };
+            allComments[action.postId].commentIds = [
+                ...allComments[action.postId].commentIds,
+                createdComment.commentId
+            ]
+
+            action.payload = {};
+            action.payload.comments = allComments;
+
+            return next(action);
+        })
+        .catch(error => {
+            alert(error.message + "(으)로 인해 댓글 작성에 실패했습니다.");
+        })
 }
 
 
@@ -305,5 +354,6 @@ export const LikeMiddleware = [
 
 export const CommentMiddleware = [
     addPaginationToLoadCommentsMiddleware,
-    loadCommentsMiddleware
+    loadCommentsMiddleware,
+    createCommentMiddleware
 ]

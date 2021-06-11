@@ -1,25 +1,25 @@
-import {StyleSheet, SafeAreaView, View, Text, VirtualizedList} from "react-native";
+import {SafeAreaView, StyleSheet, View, VirtualizedList} from "react-native";
 import * as React from "react";
 import ACommentComponent from "./ACommentComponent";
-import {useSelector} from "react-redux";
 
 export default function CommentListComponent(props) {
-    const commentIds = useSelector(state => state.post?.comments[props.postId]?.commentIds);
-
     function renderItem({item}) {
         return (
-            <ACommentComponent item={item}/>
+            <ACommentComponent comment={item}/>
         );
     }
 
-    const { commentList } = props;
+    const { commentIds, comments } = props;
+    console.log("comments : ", comments);
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.contentContainer}>
                 <VirtualizedList
                     style={{height: "100%"}}
-                    data={commentIds?.map(commentId => commentList[commentId])}
+                    data={commentIds?.map(commentId => comments[commentId])}
                     getItemCount={(data) => data?.length}
+                    keyExtractor={(item) => item?.commentId}
                     getItem={(data, index) => data[index]}
                     renderItem={renderItem}
                 />

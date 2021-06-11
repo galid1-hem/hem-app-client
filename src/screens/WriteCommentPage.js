@@ -1,11 +1,15 @@
-import { StyleSheet, SafeAreaView, View, Text, TextInput } from "react-native";
+import {SafeAreaView, StyleSheet, TextInput, View} from "react-native";
 import * as React from "react";
 import WriteCommentComponent from "../component/WriteCommentComponent";
 import {theme} from "../assets/theme/Color";
 import ACommentComponent from "../component/ACommentComponent";
+import {useDispatch} from "react-redux";
+import {createComment} from "../store/post";
 
-export default function WriteCommentPage(props) {
+export default function WriteCommentPage({route, navigation, props}) {
     const [ comment, setComment ] = React.useState("");
+    const dispatch = useDispatch();
+    const postId = route.params.postId;
 
     const parentComment = props?.parentComment;
 
@@ -23,6 +27,22 @@ export default function WriteCommentPage(props) {
         return comment.length > 2;
     }
 
+    const createRequestBody = () => {
+        return {
+            contents: [
+                {
+                    value: comment,
+                    type: "TEXT"
+                }
+            ]
+        };
+    };
+
+    const onPressWriteComment = () => {
+        dispatch(createComment(postId, createRequestBody()));
+        navigation.navigate("PostDetails", {postId: postId});
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.parentCommentContainer}>
@@ -39,7 +59,7 @@ export default function WriteCommentPage(props) {
                 />
             </View>
             <View style={styles.writeCommentComponentContainer}>
-                <WriteCommentComponent publishable={verifyPublishable()}/>
+                <WriteCommentComponent onPress={onPressWriteComment} publishable={verifyPublishable()}/>
             </View>
         </SafeAreaView>
     );
