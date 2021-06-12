@@ -1,8 +1,31 @@
 import {Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import * as React from "react";
+import {useNavigation} from '@react-navigation/native';
 import {theme} from "../assets/theme/Color";
+import {useDispatch} from "react-redux";
+import {deletePost} from "../store/post";
 
 export default function PostMenuComponent(props) {
+    const navigation = useNavigation();
+    const dispatch = useDispatch();
+
+    const onPressUpdate = () => {
+        props.closeMenu();
+
+        navigation.navigate(
+            "UploadPost",
+            {
+                post: props.post
+            }
+        )
+    }
+
+    const onPressDelete = () => {
+        props.closeMenu();
+
+        dispatch(deletePost(props.post?.postId));
+    }
+
     return (
         <Modal
             transparent={true}
@@ -12,10 +35,10 @@ export default function PostMenuComponent(props) {
             <View>
                 <TouchableOpacity onPress={props.closeMenu} style={styles.outSide}/>
                 <View style={styles.container}>
-                    <TouchableOpacity style={styles.deleteContainer}>
+                    <TouchableOpacity onPress={onPressDelete} style={styles.deleteContainer}>
                         <Text style={styles.text}>삭제</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.modifyContainer}>
+                    <TouchableOpacity onPress={onPressUpdate} style={styles.modifyContainer}>
                         <Text style={styles.text}>수정</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.shareContainer}>

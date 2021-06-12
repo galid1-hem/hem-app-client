@@ -28,6 +28,11 @@ class PostApi {
             }
         );
 
+    deletePost = (postId) =>
+        this.req.delete(
+            `/api/v1/posts/${postId}`
+        )
+
     createLike = (postId) =>
         this.req.post(
             `/api/v1/posts/${postId}/likes`

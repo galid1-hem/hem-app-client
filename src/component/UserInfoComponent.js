@@ -36,7 +36,7 @@ export default function UserInfoComponent(props) {
             </View>
             <TouchableOpacity onPress={() => setMenuVisible(true)}>
                 <Text>m</Text>
-                <PostMenuComponent closeMenu={() => setMenuVisible(false)} visible={menuVisible}/>
+                <PostMenuComponent post={props.post} closeMenu={() => setMenuVisible(false)} visible={menuVisible}/>
             </TouchableOpacity>
         </SafeAreaView>
     );

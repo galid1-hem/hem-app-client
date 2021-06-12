@@ -21,6 +21,12 @@ export const PostReducer = (state = initialState, action) => {
                     ...state.posts
                 }
             };
+        case DELETE_POST:
+            return {
+                ...state,
+                postIds: action.payload.postIds,
+                posts: action.payload.posts
+            };
         case LOAD_POST:
             return {
                 ...state,
@@ -76,6 +82,7 @@ export const PostReducer = (state = initialState, action) => {
 }
 
 const UPLOAD_POST = "[Post] Calling /posts to upload post";
+const DELETE_POST = "[Post] Calling /posts/{postId} to delete post";
 const LOAD_POST = "[Post] Calling /posts to load paginated posts";
 const DO_LIKE = "[Like] Calling /posts/{postId}/likes to create or delete like";
 const LOAD_COMMENT = "[Comment] Calling /posts/{postId}/comments to load comments of a post";
@@ -104,6 +111,53 @@ const uploadPostMiddleware = ({dispatch, getState}) => (next) => (action) => {
         .catch(error => {
             alert(error.message + "(으)로 인해 업로드에 실패했습니다.");
         });
+}
+
+// ======== delete post
+export const deletePost = (postId) => {
+    return {
+        type: DELETE_POST,
+        postId: postId
+    }
+}
+
+const deletePostMiddleware = ({dispatch, getState}) => (next) => (action) => {
+    if (action.type !== DELETE_POST) return next(action);
+
+    console.log("delete : ", action.postId);
+
+    postApi.deletePost(action.postId)
+        .then(response => {
+            const posts = getState().post.posts;
+            const postIds = getState().post.postIds;
+            console.log("all : ", posts);
+            console.log("all postIds : ", postIds);
+
+            // remove Id
+            const index = postIds.indexOf(action.postId);
+            console.log("index : ", index);
+            if (index !== -1) {
+                postIds.splice(index, 1);
+            };
+            // remove post
+            delete posts[action.postId];
+
+            console.log("after delete : ", posts);
+            console.log("after delete postIds: ", postIds);
+
+            action.payload = {
+                posts: posts,
+                postIds: postIds
+            }
+
+            console.log("action : ", action.payload);
+
+            return next(action);
+
+        })
+        .catch(error => {
+            alert("error occur when delete post : ", error);
+        })
 }
 
 // ======== load post
@@ -281,6 +335,7 @@ const createCommentMiddleware = ({dispatch, getState}) => (next) => (action) => 
 
 export const PostMiddleware = [
     uploadPostMiddleware,
+    deletePostMiddleware,
     addPaginationToLoadPostsMiddleware,
     loadPostMiddleware,
 ]

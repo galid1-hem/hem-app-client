@@ -22,9 +22,9 @@ const APostComponent = ({post}) => {
         <SafeAreaView style={styles.container}>
             <View style={styles.userInfoContainer}>
                 <UserInfoComponent
-                    menuComponent={PostMenuComponent}
+                    post={post}
                     profileImageUrl={"https://homepages.cae.wisc.edu/~ece533/images/airplane.png"}
-                                   userName={"테스트 유저"} regionName={"역삼동"} createdAt={"2020/05/10"}/>
+                    userName={"테스트 유저"} regionName={"역삼동"} createdAt={"2020/05/10"}/>
             </View>
 
             <View style={styles.contentContainer}>

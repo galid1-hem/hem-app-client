@@ -12,11 +12,17 @@ function verifyUploadPostCondition(title, contents) {
     return title && contents;
 }
 
-export default function UploadPostPage({navigation}) {
+export default function UploadPostPage({route, navigation}) {
     const [title, onChangeTitle] = React.useState("");
     const [contents, onChangeContents] = React.useState("");
     const [images, setImages] = React.useState([]);
     const dispatch = useDispatch();
+
+    React.useEffect(() => {
+        const post = route.params.post;
+        onChangeTitle(post?.title);
+        onChangeContents(post?.contents[0]?.value);
+    }, []);
 
     const renderSelectedImages = ({item, index}) => {
         return (
