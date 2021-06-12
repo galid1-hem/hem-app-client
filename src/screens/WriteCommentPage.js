@@ -1,25 +1,29 @@
-import {SafeAreaView, StyleSheet, TextInput, View} from "react-native";
+import {SafeAreaView, StyleSheet, TextInput, View, Text} from "react-native";
 import * as React from "react";
 import WriteCommentComponent from "../component/WriteCommentComponent";
 import {theme} from "../assets/theme/Color";
 import ACommentComponent from "../component/ACommentComponent";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {createComment} from "../store/post";
 
 export default function WriteCommentPage({route, navigation, props}) {
-    const [ comment, setComment ] = React.useState("");
+    const [comment, setComment] = React.useState("");
+    const state = useSelector((state) => state);
     const dispatch = useDispatch();
     const postId = route.params.postId;
-
-    const parentComment = props?.parentComment;
+    const parentCommentId = route.params.parentCommentId;
 
     const renderParentComment = () => {
+        const parentComment = state.post.comments[postId].comments[parentCommentId];
+
         return (
-            parentComment
-            ?
-                <ACommentComponent/>
-            :
-                <View></View>
+            parentCommentId
+                ?
+                    <View style={styles.parentCommentContainer}>
+                        <ACommentComponent comment={parentComment}/>
+                    </View>
+                :
+                    <View></View>
         );
     };
 
@@ -29,6 +33,7 @@ export default function WriteCommentPage({route, navigation, props}) {
 
     const createRequestBody = () => {
         return {
+            parentCommentId: parentCommentId,
             contents: [
                 {
                     value: comment,
@@ -45,10 +50,7 @@ export default function WriteCommentPage({route, navigation, props}) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.parentCommentContainer}>
-                {renderParentComment}
-            </View>
-
+            {renderParentComment()}
             <View style={styles.commentTextInputContainer}>
                 <TextInput
                     style={styles.commentTextInput}
@@ -68,12 +70,12 @@ export default function WriteCommentPage({route, navigation, props}) {
 const styles = StyleSheet.create({
     container: {
         width: "100%",
-        alignItems: "center",
-        justifyContent: "center",
         padding: 10
     },
 
     parentCommentContainer: {
+        width: "100%",
+        height: "30%",
     },
 
     commentTextInputContainer: {

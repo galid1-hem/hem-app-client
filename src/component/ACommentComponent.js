@@ -15,9 +15,6 @@ export default function ACommentComponent(props) {
                     {comment.contents[0].value}
                 </Text>
             </View>
-            <TouchableOpacity>
-                <Text>댓글쓰기</Text>
-            </TouchableOpacity>
         </SafeAreaView>
     );
 };
@@ -26,7 +23,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         marginTop: 10,
-        marginBottom: 10,
     },
 
     commentContainer: {
@@ -36,5 +32,9 @@ const styles = StyleSheet.create({
 
     userInfoContainer: {
         height: 45
+    },
+
+    commentReplyContainer: {
+        width: '20%',
     }
 });

@@ -51,7 +51,7 @@ export default function PostDetailsPage({route, navigation}) {
             <Horizontal/>
 
             <View style={styles.commentListContainer}>
-                <WriteCommentComponent onPress={() => navigation.navigate("Comment", {postId: postId})} placeHolderText={"댓글을 입력해 주세요."}/>
+                <WriteCommentComponent onPress={() => navigation.navigate("WriteComment", {postId: postId})} placeHolderText={"댓글을 입력해 주세요."}/>
                 <CommentListComponent postId={postId} comments={comments?.comments} commentIds={comments?.commentIds} />
             </View>
         </SafeAreaView>

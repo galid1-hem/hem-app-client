@@ -13,7 +13,7 @@ export default function HomeStackNavigator({navigation}) {
             <Stack.Screen name={"Home"} component={HomePage}/>
             <Stack.Screen name={"UploadPost"} component={UploadPostPage}/>
             <Stack.Screen name={"PostDetails"} component={PostDetailsPage}/>
-            <Stack.Screen name={"Comment"} component={WriteCommentPage}/>
+            <Stack.Screen name={"WriteComment"} component={WriteCommentPage}/>
         </Stack.Navigator>
     );
 }

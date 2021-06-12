@@ -18,11 +18,14 @@ export default function UploadPostPage({route, navigation}) {
     const [images, setImages] = React.useState([]);
     const dispatch = useDispatch();
 
-    React.useEffect(() => {
-        const post = route.params.post;
-        onChangeTitle(post?.title);
-        onChangeContents(post?.contents[0]?.value);
-    }, []);
+    // 수정 요청
+    if (route.params?.post) {
+        React.useEffect(() => {
+            const post = route.params.post;
+            onChangeTitle(post?.title);
+            onChangeContents(post?.contents[0]?.value);
+        }, []);
+    }
 
     const renderSelectedImages = ({item, index}) => {
         return (

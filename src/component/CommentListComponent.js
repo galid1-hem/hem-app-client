@@ -1,15 +1,36 @@
-import {SafeAreaView, StyleSheet, View, VirtualizedList} from "react-native";
+import {SafeAreaView, StyleSheet, Text, TouchableOpacity, View, VirtualizedList} from "react-native";
 import * as React from "react";
+import {useNavigation} from '@react-navigation/native';
 import ACommentComponent from "./ACommentComponent";
 
 export default function CommentListComponent(props) {
+    const postId = props.postId;
+    const navigation = useNavigation();
+
+    function onPressReplyComment(commentId) {
+        return () => {
+            navigation.navigate(
+                "WriteComment",
+                {
+                    postId: postId,
+                    parentCommentId: commentId
+                }
+            )
+        }
+    }
+
     function renderItem({item}) {
         return (
-            <ACommentComponent comment={item}/>
+            <View style={{marginBottom: 10}}>
+                <ACommentComponent onPressReplyComment={onPressReplyComment(item?.commentId)} comment={item}/>
+                <TouchableOpacity onPress={onPressReplyComment(item?.commentId)} style={styles.commentReplyContainer}>
+                    <Text>댓글쓰기</Text>
+                </TouchableOpacity>
+            </View>
         );
     }
 
-    const { commentIds, comments } = props;
+    const {commentIds, comments} = props;
 
     return (
         <SafeAreaView style={styles.container}>
