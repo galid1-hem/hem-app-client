@@ -1,47 +1,5 @@
-import urls from "../assets/network/ServerUrls";
-import {DEFAULT_FECTH_POST_SIZE, DEFAULT_FETCH_COMMENT_SIZE} from "../const/FetchSize";
-
-// const object1 = {
-//     postList: [
-//         {
-//             postId: "",
-//             userId: "",
-//             regionId: "",
-//             title: "",
-//             contents: [
-//                 {
-//                     value: "",
-//                     type: "TEXT"
-//                 }
-//             ],
-//             mediaIds: [
-//                 {
-//                     id: "",
-//                     type: "PHOTO"
-//                 }
-//             ],
-//             postCounter: {
-//                 likeCount: 0,
-//                 commentCount: 0,
-//                 bookmarkCount: 0,
-//                 viewCount: 0,
-//             },
-//             viewerLike: {
-//                 likeId: "",
-//                 postId: "",
-//                 actor: {
-//                     actorId: "",
-//                     profileImageUrl: "",
-//                     relationType: "ME"
-//                 }
-//             },
-//             visible: "true",
-//             createdAt: "",
-//             updatedAt: "",
-//             deletedAt: ""
-//         }
-//     ]
-// }
+import {DEFAULT_FETCH_COMMENT_SIZE, DEFAULT_FETCH_POST_SIZE} from "../const/FetchSize";
+import {postApi} from "../assets/network/PostApi";
 
 const initialState = {
     postIds: [],
@@ -134,30 +92,22 @@ export const uploadPost = (requestBody) => {
 const uploadPostMiddleware = ({dispatch, getState}) => (next) => (action) => {
     if (action.type !== UPLOAD_POST) return next(action);
 
-    const requestInfo = urls.postServer;
-    fetch(requestInfo, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(action.requestBody)
-    })
-        .then(response => response.json())
-        .then(responseJson => {
-            const createdPost = responseJson.data;
-
-            action.payload = {};
-            action.payload.post = createdPost;
+    postApi.createPost(action.requestBody)
+        .then(response => response.data.data)
+        .then(createdPost => {
+            action.payload = {
+                post: createdPost
+            };
 
             return next(action);
         })
         .catch(error => {
             alert(error.message + "(으)로 인해 업로드에 실패했습니다.");
-        })
+        });
 }
 
 // ======== load post
-export const loadNextBatchOfPosts = (size = DEFAULT_FECTH_POST_SIZE) => {
+export const loadNextBatchOfPosts = (size = DEFAULT_FETCH_POST_SIZE) => {
     return {
         type: LOAD_POST,
         size: size
@@ -178,22 +128,17 @@ const addPaginationToLoadPostsMiddleware = ({dispatch, getState}) => (next) => (
 const loadPostMiddleware = ({dispatch, getState}) => (next) => (action) => {
     if (action.type !== LOAD_POST) return next(action);
 
-    let requestInfo = urls.postServer + "?size=" + action.size + "&";
-    if (action.lastPostId != undefined) {
-        requestInfo += "lastPostId=" + action.lastPostId + "&";
-    }
-
-    fetch(requestInfo)
-        .then(response => response.json())
-        .then(responseJson => {
-            action.payload = {};
-
+    postApi.loadPost(action.size, action.lastPostId)
+        .then(response => response.data.data)
+        .then(loadedPosts => {
             // TODO add process when server has no posts
-            const postIds = responseJson.data.map(post => post.postId);
+            const postIds = loadedPosts.map(post => post.postId);
             const posts = {};
-            responseJson.data.forEach(post => {
+            loadedPosts.forEach(post => {
                 posts[post.postId] = post
             })
+
+            action.payload = {};
             action.payload.postIds = postIds;
             action.payload.posts = posts;
 
@@ -215,41 +160,38 @@ export const doLike = (postId) => {
 const likeMiddleware = ({dispatch, getState}) => (next) => (action) => {
     if (action.type !== DO_LIKE) return next(action);
 
-    let httpMethod = {method: "POST"};
-    let requestInfo = urls.postServer + "/" + action.postId + "/likes";
-
     const postViewerLike = getState().post.posts[action.postId]?.viewerLike;
 
-    if (postViewerLike != null) {
-        httpMethod.method = "DELETE";
-        requestInfo += "/" + postViewerLike.likeId;
-    }
-
-    fetch(requestInfo, httpMethod)
-        .then(response => response.json())
-        .then(responseJson => {
-            action.payload = {};
-            const posts = getState().post.posts;
-            const viewerLike = responseJson.data;
-
-            // createLike
-            if (viewerLike != null) {
+    if (postViewerLike == null) {
+        postApi.createLike(action.postId)
+            .then(response => response.data.data)
+            .then(viewerLike => {
+                action.payload = {};
+                const posts = getState().post.posts;
                 posts[action.postId].viewerLike = viewerLike;
                 posts[action.postId].postCounter.likeCount += 1;
-            }
-            // deleteLike
-            else {
+                action.payload.posts = posts;
+
+                return next(action);
+            })
+            .catch(error => {
+                alert("error occur when do like : ", error);
+            })
+    }
+    else {
+        postApi.deleteLike(action.postId, postViewerLike.likeId)
+            .then(response => {
+                action.payload = {};
+                const posts = getState().post.posts;
                 posts[action.postId].viewerLike = null;
                 posts[action.postId].postCounter.likeCount -= 1;
-            }
 
-            action.payload.posts = posts;
-            return next(action);
-        })
-        .catch(error => {
-            alert("error occur when do like : ", error);
-        })
-
+                return next(action);
+            })
+            .catch(error => {
+                alert("error occur when do like : ", error);
+            })
+    }
 }
 
 // ======= load Comment
@@ -276,15 +218,9 @@ const addPaginationToLoadCommentsMiddleware = ({dispatch, getState}) => (next) =
 const loadCommentsMiddleware = ({dispatch, getState}) => (next) => (action) => {
     if (action.type !== LOAD_COMMENT) return next(action);
 
-    let requestInfo = urls.postServer + "/" + action.postId + "/comments?size=" + action.size + "&";
-    if (action.lastCommentId !== undefined) {
-        requestInfo += "lastCommentId=" + action.lastCommentId + "&";
-    }
-
-    fetch(requestInfo)
-        .then(response => response.json())
-        .then(responseJson => {
-            const loadedComments = responseJson.data;
+    postApi.loadComment(action.postId, action.size, action.lastCommentId)
+        .then(response => response.data.data)
+        .then(loadedComments => {
             const loadedCommentIds = loadedComments.map(comment => comment.commentId);
             const loadedCommentIdToCommentMap = {};
             loadedComments.forEach(comment => loadedCommentIdToCommentMap[comment.commentId] = comment);
@@ -308,8 +244,9 @@ const loadCommentsMiddleware = ({dispatch, getState}) => (next) => (action) => {
                 ]
             };
 
-            action.payload = {};
-            action.payload.comments = allComments;
+            action.payload = {
+                comments: allComments
+            };
 
             return next(action);
         })
@@ -328,28 +265,19 @@ export const createComment = (postId, requestBody) => {
 const createCommentMiddleware = ({dispatch, getState}) => (next) => (action) => {
     if (action.type !== CREATE_COMMENT) return next(action);
 
-    const requestInfo = urls.postServer + "/" + action.postId + "/comments";
-    fetch(requestInfo, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(action.requestBody)
-    })
-        .then(response => response.json())
-        .then(responseJson => {
-            const createdComment = responseJson.data;
-
-            action.payload = {};
-            action.payload.comment = createdComment;
+    postApi.createComment(action.postId, action.requestBody)
+        .then(response => response.data.data)
+        .then(createdComment => {
+            action.payload = {
+                comment: createdComment
+            };
 
             return next(action);
         })
         .catch(error => {
             alert(error.message + "(으)로 인해 댓글 작성에 실패했습니다.");
-        })
+        });
 }
-
 
 export const PostMiddleware = [
     uploadPostMiddleware,
