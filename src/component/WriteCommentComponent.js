@@ -4,7 +4,6 @@ import OkBtn from "./OkBtn";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {theme} from "../assets/theme/Color";
 
-
 export default function WriteCommentComponent(props) {
     return (
        <SafeAreaView style={styles.container}>
@@ -63,5 +62,5 @@ const styles = StyleSheet.create({
     publishBtnContainer: {
         flex: 1,
         height: '80%',
-    }
+    },
 });

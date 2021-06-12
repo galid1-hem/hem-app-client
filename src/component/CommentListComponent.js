@@ -2,6 +2,7 @@ import {SafeAreaView, StyleSheet, Text, TouchableOpacity, View, VirtualizedList}
 import * as React from "react";
 import {useNavigation} from '@react-navigation/native';
 import ACommentComponent from "./ACommentComponent";
+import {theme} from "../assets/theme/Color";
 
 export default function CommentListComponent(props) {
     const postId = props.postId;
@@ -24,7 +25,7 @@ export default function CommentListComponent(props) {
             <View style={{marginBottom: 10}}>
                 <ACommentComponent onPressReplyComment={onPressReplyComment(item?.commentId)} comment={item}/>
                 <TouchableOpacity onPress={onPressReplyComment(item?.commentId)} style={styles.commentReplyContainer}>
-                    <Text>댓글쓰기</Text>
+                    <Text style={styles.replyText}>답글 {item?.subCommentCount}개</Text>
                 </TouchableOpacity>
             </View>
         );
@@ -57,4 +58,13 @@ const styles = StyleSheet.create({
     contentContainer: {
         width: "95%",
     },
+
+    commentReplyContainer: {
+        width: '20%',
+        marginLeft: 40,
+    },
+
+    replyText: {
+        color: theme.colors.activeText
+    }
 });

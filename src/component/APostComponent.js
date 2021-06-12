@@ -7,7 +7,6 @@ import UserInfoComponent from "./UserInfoComponent";
 import {useNavigation} from '@react-navigation/native';
 import {loadNextBatchOfComments} from "../store/post";
 import {useDispatch} from "react-redux";
-import PostMenuComponent from "./PostMenuComponent";
 
 const APostComponent = ({post}) => {
     const dispatch = useDispatch();

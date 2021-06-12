@@ -4,7 +4,8 @@ import WriteCommentComponent from "../component/WriteCommentComponent";
 import {theme} from "../assets/theme/Color";
 import ACommentComponent from "../component/ACommentComponent";
 import {useDispatch, useSelector} from "react-redux";
-import {createComment} from "../store/post";
+import {createComment, loadNextBatchOfComments} from "../store/post";
+import CommentListComponent from "../component/CommentListComponent";
 
 export default function WriteCommentPage({route, navigation, props}) {
     const [comment, setComment] = React.useState("");
@@ -19,13 +20,33 @@ export default function WriteCommentPage({route, navigation, props}) {
         return (
             parentCommentId
                 ?
-                    <View style={styles.parentCommentContainer}>
-                        <ACommentComponent comment={parentComment}/>
-                    </View>
+                <View style={styles.parentCommentContainer}>
+                    <ACommentComponent comment={parentComment}/>
+                </View>
                 :
-                    <View></View>
+                <View></View>
         );
     };
+
+    if (parentCommentId !== undefined) {
+        React.useEffect(() => {
+            dispatch(loadNextBatchOfComments(postId, parentCommentId));
+        }, []);
+    }
+
+    const renderSubCommentList = () => {
+        // postId={postId} comments={comments?.comments} commentIds={comments?.commentIds}
+
+        // return (
+        //     parentCommentId
+        //         ?
+        //         <View>
+        //             <CommentListComponent postId={postId} comments={} commentIds={}/>
+        //         </View>
+        //         :
+        //         <View></View>
+        // )
+    }
 
     const verifyPublishable = () => {
         return comment.length > 2;
@@ -63,6 +84,7 @@ export default function WriteCommentPage({route, navigation, props}) {
             <View style={styles.writeCommentComponentContainer}>
                 <WriteCommentComponent onPress={onPressWriteComment} publishable={verifyPublishable()}/>
             </View>
+            {/*{renderSubCommentList()}*/}
         </SafeAreaView>
     );
 }

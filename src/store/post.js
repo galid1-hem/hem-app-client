@@ -59,6 +59,7 @@ export const PostReducer = (state = initialState, action) => {
                 ...state.posts,
             }
             posts[action.postId].postCounter.commentCount += 1;
+
             return {
                 ...state,
                 ...posts,
@@ -229,10 +230,11 @@ const likeMiddleware = ({dispatch, getState}) => (next) => (action) => {
 }
 
 // ======= load Comment
-export const loadNextBatchOfComments = (postId, size = DEFAULT_FETCH_COMMENT_SIZE) => {
+export const loadNextBatchOfComments = (postId, parentCommentId, size = DEFAULT_FETCH_COMMENT_SIZE) => {
     return {
         type: LOAD_COMMENT,
         postId: postId,
+        parentCommentId: parentCommentId,
         size: size
     }
 }
@@ -252,7 +254,7 @@ const addPaginationToLoadCommentsMiddleware = ({dispatch, getState}) => (next) =
 const loadCommentsMiddleware = ({dispatch, getState}) => (next) => (action) => {
     if (action.type !== LOAD_COMMENT) return next(action);
 
-    postApi.loadComment(action.postId, action.size, action.lastCommentId)
+    postApi.loadComment(action.postId, action.parentCommentId, action.size, action.lastCommentId)
         .then(response => response.data.data)
         .then(loadedComments => {
             const loadedCommentIds = loadedComments.map(comment => comment.commentId);
@@ -304,9 +306,10 @@ const createCommentMiddleware = ({dispatch, getState}) => (next) => (action) => 
         .then(createdComment => {
             action.payload = {};
 
+            const parentCommentId = action.requestBody.parentCommentId;
             const comments = getState().post.comments;
 
-            if (action.requestBody.parentCommentId === undefined) {
+            if (parentCommentId === undefined) {
                 comments[action.postId] = {
                     comments: {
                         ...comments[action.postId].comments,
@@ -317,6 +320,10 @@ const createCommentMiddleware = ({dispatch, getState}) => (next) => (action) => 
                         createdComment.commentId
                     ]
                 };
+            }
+            // create sub Comment
+            else {
+                comments[action.postId].comments[parentCommentId].subCommentCount += 1;
             }
 
             action.payload.comments = comments;

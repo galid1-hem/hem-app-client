@@ -34,7 +34,4 @@ const styles = StyleSheet.create({
         height: 45
     },
 
-    commentReplyContainer: {
-        width: '20%',
-    }
 });

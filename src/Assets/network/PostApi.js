@@ -51,13 +51,20 @@ class PostApi {
             }
         );
 
-    loadComment = (postId, size = DEFAULT_FETCH_COMMENT_SIZE, lastCommentId = null) =>
-        this.req.get(
-            `/api/v1/posts/${postId}/comments`,
+    loadComment = (postId, parentCommentId, size = DEFAULT_FETCH_COMMENT_SIZE, lastCommentId = null) => {
+        let url = `/api/v1/posts/${postId}/comments/`;
+        if (parentCommentId !== undefined) {
+            url += parentCommentId
+        }
+
+        return this.req.get(
+            url,
             {
                 params: {size: size, lastCommentId: lastCommentId}
             }
         );
+    }
+
 }
 
 const DEFAULT_FETCH_POST_SIZE = 20;
