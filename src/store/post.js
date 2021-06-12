@@ -62,19 +62,7 @@ export const PostReducer = (state = initialState, action) => {
             return {
                 ...state,
                 ...posts,
-                comments: {
-                    ...state.comments,
-                    [action.postId]: {
-                        comments: {
-                            ...state.comments[action.postId].comments,
-                            [action.payload.comment.commentId]: action.payload.comment
-                        },
-                        commentIds: [
-                            ...state.comments[action.postId].commentIds,
-                            action.payload.comment.commentId
-                        ]
-                    }
-                }
+                ...action.payload.comments
             };
         default:
             return state;
@@ -130,27 +118,19 @@ const deletePostMiddleware = ({dispatch, getState}) => (next) => (action) => {
         .then(response => {
             const posts = getState().post.posts;
             const postIds = getState().post.postIds;
-            console.log("all : ", posts);
-            console.log("all postIds : ", postIds);
 
             // remove Id
             const index = postIds.indexOf(action.postId);
-            console.log("index : ", index);
             if (index !== -1) {
                 postIds.splice(index, 1);
             };
             // remove post
             delete posts[action.postId];
 
-            console.log("after delete : ", posts);
-            console.log("after delete postIds: ", postIds);
-
             action.payload = {
                 posts: posts,
                 postIds: postIds
             }
-
-            console.log("action : ", action.payload);
 
             return next(action);
 
@@ -322,9 +302,24 @@ const createCommentMiddleware = ({dispatch, getState}) => (next) => (action) => 
     postApi.createComment(action.postId, action.requestBody)
         .then(response => response.data.data)
         .then(createdComment => {
-            action.payload = {
-                comment: createdComment
-            };
+            action.payload = {};
+
+            const comments = getState().post.comments;
+
+            if (action.requestBody.parentCommentId === undefined) {
+                comments[action.postId] = {
+                    comments: {
+                        ...comments[action.postId].comments,
+                        [createdComment.commentId]: createdComment
+                    },
+                    commentIds: [
+                        ...comments[action.postId].commentIds,
+                        createdComment.commentId
+                    ]
+                };
+            }
+
+            action.payload.comments = comments;
 
             return next(action);
         })
