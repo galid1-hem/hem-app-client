@@ -56,7 +56,7 @@ class PostApi {
         if (parentCommentId !== undefined) {
             url += parentCommentId
         }
-
+        
         return this.req.get(
             url,
             {

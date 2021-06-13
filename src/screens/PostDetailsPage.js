@@ -50,8 +50,10 @@ export default function PostDetailsPage({route, navigation}) {
 
             <Horizontal/>
 
-            <View style={styles.commentListContainer}>
+            <View style={styles.writeCommentComponentContainer}>
                 <WriteCommentComponent onPress={() => navigation.navigate("WriteComment", {postId: postId})} placeHolderText={"댓글을 입력해 주세요."}/>
+            </View>
+            <View style={styles.commentListContainer}>
                 <CommentListComponent postId={postId} comments={comments?.comments} commentIds={comments?.commentIds} />
             </View>
         </SafeAreaView>
@@ -60,7 +62,7 @@ export default function PostDetailsPage({route, navigation}) {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        width: '100%',
         borderTopColor: theme.colors.border,
         borderTopWidth: 3,
         borderBottomColor: theme.colors.border,
@@ -106,5 +108,10 @@ const styles = StyleSheet.create({
         width: "95%"
     },
 
-    commentListContainer: {}
+    writeCommentComponentContainer: {},
+
+    commentListContainer: {
+        width: "100%",
+        height: "60%"
+    }
 });

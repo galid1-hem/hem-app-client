@@ -4,7 +4,7 @@ import WriteCommentComponent from "../component/WriteCommentComponent";
 import {theme} from "../assets/theme/Color";
 import ACommentComponent from "../component/ACommentComponent";
 import {useDispatch, useSelector} from "react-redux";
-import {createComment, loadNextBatchOfComments} from "../store/post";
+import {createComment, loadNextBatchOfSubComments} from "../store/post";
 import CommentListComponent from "../component/CommentListComponent";
 
 export default function WriteCommentPage({route, navigation, props}) {
@@ -30,22 +30,23 @@ export default function WriteCommentPage({route, navigation, props}) {
 
     if (parentCommentId !== undefined) {
         React.useEffect(() => {
-            dispatch(loadNextBatchOfComments(postId, parentCommentId));
+            dispatch(loadNextBatchOfSubComments(postId, parentCommentId));
         }, []);
     }
 
     const renderSubCommentList = () => {
-        // postId={postId} comments={comments?.comments} commentIds={comments?.commentIds}
+        const subComments = state.post.subComments[parentCommentId];
 
-        // return (
-        //     parentCommentId
-        //         ?
-        //         <View>
-        //             <CommentListComponent postId={postId} comments={} commentIds={}/>
-        //         </View>
-        //         :
-        //         <View></View>
-        // )
+        return (
+            parentCommentId
+                ?
+                <View style={styles.subCommentListContainer}>
+                    <CommentListComponent parentCommentId={parentCommentId} postId={postId}
+                                          comments={subComments?.comments} commentIds={subComments?.commentIds}/>
+                </View>
+                :
+                <View></View>
+        )
     }
 
     const verifyPublishable = () => {
@@ -84,7 +85,7 @@ export default function WriteCommentPage({route, navigation, props}) {
             <View style={styles.writeCommentComponentContainer}>
                 <WriteCommentComponent onPress={onPressWriteComment} publishable={verifyPublishable()}/>
             </View>
-            {/*{renderSubCommentList()}*/}
+            {renderSubCommentList()}
         </SafeAreaView>
     );
 }
@@ -96,8 +97,8 @@ const styles = StyleSheet.create({
     },
 
     parentCommentContainer: {
-        width: "100%",
-        height: "30%",
+        paddingHorizontal: 10,
+        height: 80,
     },
 
     commentTextInputContainer: {
@@ -121,6 +122,11 @@ const styles = StyleSheet.create({
     },
 
     writeCommentComponentContainer: {
-        width: '100%',
+
+    },
+
+    subCommentListContainer: {
+        width: "100%",
+        height: "60%",
     }
 });

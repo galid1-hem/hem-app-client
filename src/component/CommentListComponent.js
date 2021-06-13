@@ -7,6 +7,7 @@ import {theme} from "../assets/theme/Color";
 export default function CommentListComponent(props) {
     const postId = props.postId;
     const navigation = useNavigation();
+    const parentCommentId = props.parentCommentId;
 
     function onPressReplyComment(commentId) {
         return () => {
@@ -20,13 +21,23 @@ export default function CommentListComponent(props) {
         }
     }
 
+    function renderSubCommentCount(comment) {
+        return (
+            parentCommentId === undefined
+                ?
+                    <TouchableOpacity onPress={onPressReplyComment(comment?.commentId)} style={styles.commentReplyContainer}>
+                        <Text style={styles.replyText}>답글 {comment?.subCommentCount}개</Text>
+                    </TouchableOpacity>
+                :
+                    <View></View>
+        );
+    }
+
     function renderItem({item}) {
         return (
-            <View style={{marginBottom: 10}}>
+            <View style={{width: "80%", marginBottom: 10}}>
                 <ACommentComponent onPressReplyComment={onPressReplyComment(item?.commentId)} comment={item}/>
-                <TouchableOpacity onPress={onPressReplyComment(item?.commentId)} style={styles.commentReplyContainer}>
-                    <Text style={styles.replyText}>답글 {item?.subCommentCount}개</Text>
-                </TouchableOpacity>
+                {renderSubCommentCount(item)}
             </View>
         );
     }
@@ -35,28 +46,22 @@ export default function CommentListComponent(props) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.contentContainer}>
-                <VirtualizedList
-                    style={{height: "100%"}}
-                    data={commentIds?.map(commentId => comments[commentId])}
-                    getItemCount={(data) => data?.length}
-                    keyExtractor={(item) => item?.commentId}
-                    getItem={(data, index) => data[index]}
-                    renderItem={renderItem}
-                />
-            </View>
+            <VirtualizedList
+                data={commentIds?.map(commentId => comments[commentId])}
+                getItemCount={(data) => data?.length}
+                keyExtractor={(item) => item?.commentId}
+                getItem={(data, index) => data[index]}
+                renderItem={renderItem}
+            />
         </SafeAreaView>
     )
 };
 
 const styles = StyleSheet.create({
     container: {
-        width: "100%",
+        flex: 1,
         alignItems: "center",
-    },
-
-    contentContainer: {
-        width: "95%",
+        marginHorizontal: 15,
     },
 
     commentReplyContainer: {

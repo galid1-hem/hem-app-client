@@ -4,15 +4,15 @@ import UserInfoComponent from "./UserInfoComponent";
 
 export default function ACommentComponent(props) {
     const comment = props.comment;
-
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.userInfoContainer}>
-                <UserInfoComponent userName={"테스트 유저"} regionName={"역삼동"} createdAt={"2020/05/10"}/>
+                <UserInfoComponent
+                    userName={"테스트 유저"} regionName={"역삼동"} createdAt={"2020/05/30"}/>
             </View>
             <View style={styles.commentContainer}>
                 <Text>
-                    {comment.contents[0].value}
+                    {comment?.contents[0].value}
                 </Text>
             </View>
         </SafeAreaView>
@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
     },
 
     userInfoContainer: {
+        flex: 1,
         height: 45
     },
 

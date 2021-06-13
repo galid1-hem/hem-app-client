@@ -4,7 +4,8 @@ import {postApi} from "../assets/network/PostApi";
 const initialState = {
     postIds: [],
     posts: {}, // postId: Post
-    comments: {} // postId: Comments
+    comments: {}, // postId: Comments
+    subComments: {}
 };
 
 export const PostReducer = (state = initialState, action) => {
@@ -54,6 +55,11 @@ export const PostReducer = (state = initialState, action) => {
                     ...action.payload.comments
                 }
             };
+        case LOAD_SUB_COMMENT:
+            return {
+                ...state,
+                subComments: {...action.payload.subComments}
+            }
         case CREATE_COMMENT:
             const posts = {
                 ...state.posts,
@@ -75,6 +81,7 @@ const DELETE_POST = "[Post] Calling /posts/{postId} to delete post";
 const LOAD_POST = "[Post] Calling /posts to load paginated posts";
 const DO_LIKE = "[Like] Calling /posts/{postId}/likes to create or delete like";
 const LOAD_COMMENT = "[Comment] Calling /posts/{postId}/comments to load comments of a post";
+const LOAD_SUB_COMMENT = "[Comment] Calling /posts/{postId}/comments/{commentId} to load sub comments of comments of a post";
 const CREATE_COMMENT = "[Comment] Calling /posts/{postId}/comments to create comment";
 
 // ======== upload post
@@ -113,8 +120,6 @@ export const deletePost = (postId) => {
 const deletePostMiddleware = ({dispatch, getState}) => (next) => (action) => {
     if (action.type !== DELETE_POST) return next(action);
 
-    console.log("delete : ", action.postId);
-
     postApi.deletePost(action.postId)
         .then(response => {
             const posts = getState().post.posts;
@@ -124,7 +129,8 @@ const deletePostMiddleware = ({dispatch, getState}) => (next) => (action) => {
             const index = postIds.indexOf(action.postId);
             if (index !== -1) {
                 postIds.splice(index, 1);
-            };
+            }
+            ;
             // remove post
             delete posts[action.postId];
 
@@ -212,8 +218,7 @@ const likeMiddleware = ({dispatch, getState}) => (next) => (action) => {
             .catch(error => {
                 alert("error occur when do like : ", error);
             })
-    }
-    else {
+    } else {
         postApi.deleteLike(action.postId, postViewerLike.likeId)
             .then(response => {
                 action.payload = {};
@@ -230,17 +235,8 @@ const likeMiddleware = ({dispatch, getState}) => (next) => (action) => {
 }
 
 // ======= load Comment
-export const loadNextBatchOfComments = (postId, parentCommentId, size = DEFAULT_FETCH_COMMENT_SIZE) => {
-    return {
-        type: LOAD_COMMENT,
-        postId: postId,
-        parentCommentId: parentCommentId,
-        size: size
-    }
-}
-
 const addPaginationToLoadCommentsMiddleware = ({dispatch, getState}) => (next) => (action) => {
-    if (action.type !== LOAD_COMMENT) return next(action);
+    if (action.type !== LOAD_COMMENT && action.type !== LOAD_SUB_COMMENT) return next(action);
 
     const commentIds = getState().post.comments ? [action.postId]?.commentIds : [];
     if (commentIds === undefined || commentIds.length === 0) {
@@ -251,10 +247,18 @@ const addPaginationToLoadCommentsMiddleware = ({dispatch, getState}) => (next) =
     return next(action);
 }
 
+export const loadNextBatchOfComments = (postId, size = DEFAULT_FETCH_COMMENT_SIZE) => {
+    return {
+        type: LOAD_COMMENT,
+        postId: postId,
+        size: size
+    }
+}
+
 const loadCommentsMiddleware = ({dispatch, getState}) => (next) => (action) => {
     if (action.type !== LOAD_COMMENT) return next(action);
 
-    postApi.loadComment(action.postId, action.parentCommentId, action.size, action.lastCommentId)
+    postApi.loadComment(action.postId, undefined, action.size, action.lastCommentId)
         .then(response => response.data.data)
         .then(loadedComments => {
             const loadedCommentIds = loadedComments.map(comment => comment.commentId);
@@ -287,6 +291,50 @@ const loadCommentsMiddleware = ({dispatch, getState}) => (next) => (action) => {
             return next(action);
         })
         .catch(error => alert("error occur when loading comments! : " + error));
+}
+
+export const loadNextBatchOfSubComments = (postId, parentCommentId, size = DEFAULT_FETCH_COMMENT_SIZE) => {
+    return {
+        type: LOAD_SUB_COMMENT,
+        postId: postId,
+        parentCommentId: parentCommentId,
+        size: size
+    }
+}
+
+const loadSubCommentMiddleware = ({dispatch, getState}) => (next) => (action) => {
+    if (action.type !== LOAD_SUB_COMMENT) return next(action);
+
+    postApi.loadComment(action.postId, action.parentCommentId, action.size, action.lastCommentId)
+        .then(response => response.data.data)
+        .then(loadedComments => {
+            const loadedSubCommentIds = loadedComments.map(comment => comment.commentId);
+            const loadedSubCommentIdToCommentMap = {};
+            loadedComments.forEach(comment => loadedSubCommentIdToCommentMap[comment.commentId] = comment)
+
+            const subComments = getState().post.subComments;
+            subComments[action.parentCommentId] = {
+                comments: {},
+                commentIds: []
+            };
+
+            subComments[action.parentCommentId].comments = {
+                ...subComments[action.parentCommentId].comments,
+                ...loadedSubCommentIdToCommentMap
+            }
+
+            subComments[action.parentCommentId].commentIds = [
+                ...subComments[action.parentCommentId].commentIds,
+                ...loadedSubCommentIds
+            ]
+
+            action.payload = {
+                subComments: subComments
+            };
+
+            return next(action);
+        })
+        .catch(error => alert("error occur when load sub comments : ", error));
 }
 
 // ===== CREATE COMMENT
@@ -348,6 +396,7 @@ export const LikeMiddleware = [
 
 export const CommentMiddleware = [
     addPaginationToLoadCommentsMiddleware,
+    loadSubCommentMiddleware,
     loadCommentsMiddleware,
-    createCommentMiddleware
+    createCommentMiddleware,
 ]
