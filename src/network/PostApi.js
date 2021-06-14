@@ -1,6 +1,6 @@
 import urls from "./ServerUrls";
 import axios from "axios";
-import {tokenStorage} from "../../utils/TokenStorage";
+import {tokenStorage} from "@app/utils/TokenStorage";
 
 class PostApi {
     constructor(domain: String) {

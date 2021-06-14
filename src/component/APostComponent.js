@@ -1,6 +1,6 @@
 import {SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import * as React from "react";
-import {theme} from "../assets/theme/Color";
+import {theme} from "@app/assets/theme/Color";
 import LikeStatusComponent from "./LikeStatusComponent";
 import CommentStatusComponent from "./CommentStatusComponent";
 import UserInfoComponent from "./UserInfoComponent";

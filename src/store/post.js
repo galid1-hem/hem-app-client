@@ -1,5 +1,5 @@
 import {DEFAULT_FETCH_COMMENT_SIZE, DEFAULT_FETCH_POST_SIZE} from "../const/FetchSize";
-import {postApi} from "../assets/network/PostApi";
+import {postApi} from "@app/network/PostApi";
 
 const initialState = {
     postIds: [],

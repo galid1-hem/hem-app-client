@@ -1,7 +1,7 @@
 import * as React from "react";
 import {SafeAreaView, View, Text, StyleSheet, Image, TextInput, FlatList, TouchableOpacity} from "react-native";
 import AddPhotoBtn from "../component/AddPhotoBtn";
-import {theme} from "../assets/theme/Color";
+import {theme} from "@app/assets/theme/Color";
 import ImagePicker from "react-native-image-crop-picker";
 import Icon from 'react-native-vector-icons/Ionicons';
 import OkBtn from "../component/OkBtn";

@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@react-native-community/masked-view": "^0.1.11",
+    "@react-native-firebase/app": "^12.1.0",
+    "@react-native-firebase/messaging": "^12.1.0",
     "@react-navigation/bottom-tabs": "^5.11.11",
     "@react-navigation/native": "^5.9.4",
     "@react-navigation/stack": "^5.14.5",
@@ -39,6 +41,7 @@
     "@types/react-native": "^0.63.49",
     "@types/react-test-renderer": "^17.0.1",
     "babel-jest": "^25.1.0",
+    "babel-plugin-module-resolver": "^4.1.0",
     "eslint": "^6.5.1",
     "jest": "^25.1.0",
     "metro-react-native-babel-preset": "^0.59.0",

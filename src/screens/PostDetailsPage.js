@@ -8,6 +8,7 @@ import Horizontal from "../component/Horizontal";
 import WriteCommentComponent from "../component/WriteCommentComponent";
 import CommentListComponent from "../component/CommentListComponent";
 import {useSelector} from "react-redux";
+import PostMenuComponent from "../component/PostMenuComponent";
 
 export default function PostDetailsPage({route, navigation}) {
     // const [commentList, setCommentList] = React.useState([]);
@@ -31,7 +32,7 @@ export default function PostDetailsPage({route, navigation}) {
 
                     <View style={styles.contentContentsContainer}>
                         <View style={styles.textContainer}>
-                            <Text style={styles.contentsText}>{post?.contents?[0]?.value:""}</Text>
+                            <Text style={styles.contentsText}>{post?.contents ? [0]?.value : ""}</Text>
                         </View>
                         <TouchableOpacity style={styles.imagesContainer}>
 
@@ -51,10 +52,11 @@ export default function PostDetailsPage({route, navigation}) {
             <Horizontal/>
 
             <View style={styles.writeCommentComponentContainer}>
-                <WriteCommentComponent onPress={() => navigation.navigate("WriteComment", {postId: postId})} placeHolderText={"댓글을 입력해 주세요."}/>
+                <WriteCommentComponent onPress={() => navigation.navigate("WriteComment", {postId: postId})}
+                                       placeHolderText={"댓글을 입력해 주세요."}/>
             </View>
             <View style={styles.commentListContainer}>
-                <CommentListComponent postId={postId} comments={comments?.comments} commentIds={comments?.commentIds} />
+                <CommentListComponent postId={postId} comments={comments?.comments} commentIds={comments?.commentIds}/>
             </View>
         </SafeAreaView>
     );
