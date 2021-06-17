@@ -1,5 +1,6 @@
 const urls = {
-    postServer: "http://172.30.1.42:8080"
+    postServer: "http://172.30.1.27:8080",
+    pushServer: "http://172.30.1.27:3000",
 };
 
 export default urls;
