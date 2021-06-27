@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import OkBtn from "../component/OkBtn";
 import {useDispatch} from "react-redux";
 import {uploadPost} from "../store/post";
+import {imageApi} from "../network/ImageApi";
 
 function verifyUploadPostCondition(title, contents) {
     return title && contents;
@@ -37,7 +38,9 @@ export default function UploadPostPage({route, navigation}) {
                     }}
                 />
                 <TouchableOpacity
-                    onPress={() => { setImages(images.filter((v,i) => i != index)) }}
+                    onPress={() => {
+                        setImages(images.filter((v, i) => i != index))
+                    }}
                     style={{position: "absolute", top: -10, right: -10, zIndex: 10}}>
                     <Icon name={"close-circle"} size={20} color={"gray"}/>
                 </TouchableOpacity>
@@ -53,13 +56,44 @@ export default function UploadPostPage({route, navigation}) {
             if (selectedImages.length + images.length > 10) {
                 alert("최대 10장까지 업로드 가능합니다.");
             } else {
-                const paths = selectedImages.map(selectedImage => selectedImage.path);
+                const paths = selectedImages.map(selectedImage => {
+                    const pathParts = selectedImage.path.split("/");
+
+                    return {
+                        uri: selectedImage.path,
+                        type: selectedImage.mime,
+                        name: pathParts[pathParts.length - 1]
+                    }
+                });
                 setImages([...images, ...paths]);
             }
         });
     }
 
-    const createUploadPostRequestBody = () => {
+    const onSubmit = () => {
+        // image upload
+        imageApi.uploadImage(createUploadImageRequestBody()).then(response => {
+            let medias = response.data.data;
+
+            // post upload
+            dispatch(uploadPost(createUploadPostRequestBody(medias)));
+            navigation.navigate("Home");
+        })
+            .catch(e => console.log(e));
+    }
+
+    const createUploadImageRequestBody = () => {
+        const formData = new FormData();
+
+        images.forEach(image => formData.append("files", image));
+        formData.append("userId", 1);
+        formData.append("imageType", "POST");
+        formData.append("serviceType", "POST");
+
+        return formData;
+    }
+
+    const createUploadPostRequestBody = (medias) => {
         return {
             regionId: 1,
             title: title,
@@ -69,12 +103,7 @@ export default function UploadPostPage({route, navigation}) {
                     type: "TEXT"
                 }
             ],
-            mediaIds: [
-                {
-                    id: "TEST_IMAGE",
-                    type: "PHOTO"
-                }
-            ]
+            mediaIds: medias
         }
     }
 
@@ -86,8 +115,9 @@ export default function UploadPostPage({route, navigation}) {
                 <View style={styles.topContentContainer}>
                     <View style={styles.photoContainer}>
                         <AddPhotoBtn onPress={onPressAddPhotoBtn} imageCount={imageCount}/>
-                        <FlatList style={styles.selectedImagesContainer} contentContainerStyle={{alignItems: "center", width:'100%'}} horizontal={true}
-                                  data={images}
+                        <FlatList style={styles.selectedImagesContainer}
+                                  contentContainerStyle={{alignItems: "center", width: '100%'}} horizontal={true}
+                                  data={images.map(value => value.uri)}
                                   renderItem={renderSelectedImages}/>
                     </View>
                     <View style={styles.titleContainer}>
@@ -112,10 +142,7 @@ export default function UploadPostPage({route, navigation}) {
                 </View>
             </View>
             <View style={styles.uploadBtnContainer}>
-                <OkBtn onPress={() => {
-                    dispatch(uploadPost(createUploadPostRequestBody()));
-                    navigation.navigate("Home");
-                }} activated={verifyUploadPostCondition(title, contents)} text={"게시하기"}/>
+                <OkBtn onPress={onSubmit} activated={verifyUploadPostCondition(title, contents)} text={"게시하기"}/>
             </View>
         </SafeAreaView>
     )

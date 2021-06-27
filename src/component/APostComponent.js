@@ -1,4 +1,4 @@
-import {SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import * as React from "react";
 import {theme} from "@app/assets/theme/Color";
 import LikeStatusComponent from "./LikeStatusComponent";
@@ -7,6 +7,7 @@ import UserInfoComponent from "./UserInfoComponent";
 import {useNavigation} from '@react-navigation/native';
 import {loadNextBatchOfComments} from "../store/post";
 import {useDispatch} from "react-redux";
+import PostImageComponent from "./PostImageComponent";
 
 const APostComponent = ({post}) => {
     const dispatch = useDispatch();
@@ -36,9 +37,11 @@ const APostComponent = ({post}) => {
                         <View style={styles.textContainer}>
                             <Text style={styles.contentsText}>{post?.contents[0].value}</Text>
                         </View>
-                        <TouchableOpacity style={styles.imagesContainer}>
-
-                        </TouchableOpacity>
+                        <View style={styles.imagesContainer}>
+                            <PostImageComponent
+                                images={post.mediaIds}
+                            />
+                        </View>
                     </View>
                 </View>
             </View>
@@ -67,7 +70,6 @@ const styles = StyleSheet.create({
     contentContainer: {
         width: '100%',
         alignItems: 'center',
-        // marginTop: 8,
         marginBottom: 8,
     },
 
@@ -90,7 +92,10 @@ const styles = StyleSheet.create({
         fontSize: 15
     },
 
-    imagesContainer: {},
+    imagesContainer: {
+        width: "100%",
+        height: 150
+    },
 
     reactionComponentContainer: {
         borderTopColor: theme.colors.border,

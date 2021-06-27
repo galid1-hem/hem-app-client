@@ -36,7 +36,7 @@ export default function PostMenuComponent(props) {
                 <TouchableOpacity onPress={props.closeMenu} style={styles.outSide}/>
                 <View style={styles.container}>
                     <TouchableOpacity onPress={onPressDelete} style={styles.deleteContainer}>
-                        <Text style={styles.text}>삭제</Text>
+                        <Text style={{...styles.text, color: "orangered"}}>삭제</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={onPressUpdate} style={styles.modifyContainer}>
                         <Text style={styles.text}>수정</Text>

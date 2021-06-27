@@ -35,8 +35,7 @@ const Welcome = () => {
     }, []);
 
     return (
-        <View><Text>asd</Text></View>
-        // <MyTabs/>
+        <MyTabs/>
     );
 };
 

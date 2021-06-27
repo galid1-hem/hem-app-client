@@ -1,7 +1,7 @@
 import {Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import * as React from "react";
 import {theme} from "../assets/theme/Color";
-import Icon from "react-native-vector-icons/FontAwesome5";
+import Icon from "react-native-vector-icons/Ionicons";
 import PostMenuComponent from "./PostMenuComponent";
 
 export default function UserInfoComponent(props) {
@@ -34,8 +34,8 @@ export default function UserInfoComponent(props) {
                     <Text style={styles.sideInfoText}>{props.createdAt}</Text>
                 </View>
             </View>
-            <TouchableOpacity onPress={() => setMenuVisible(true)}>
-                <Text>m</Text>
+            <TouchableOpacity style={{bottom: 5}} onPress={() => setMenuVisible(true)}>
+                <Icon size={15} name={"menu"}/>
                 <PostMenuComponent post={props.post} closeMenu={() => setMenuVisible(false)} visible={menuVisible}/>
             </TouchableOpacity>
         </SafeAreaView>

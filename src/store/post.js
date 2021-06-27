@@ -172,6 +172,8 @@ const loadPostMiddleware = ({dispatch, getState}) => (next) => (action) => {
     postApi.loadPost(action.size, action.lastPostId)
         .then(response => response.data.data)
         .then(loadedPosts => {
+            console.log("POSTS: ", loadedPosts);
+
             // TODO add process when server has no posts
             const postIds = loadedPosts.map(post => post.postId);
             const posts = {};

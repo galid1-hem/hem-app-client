@@ -8,10 +8,9 @@ import Horizontal from "../component/Horizontal";
 import WriteCommentComponent from "../component/WriteCommentComponent";
 import CommentListComponent from "../component/CommentListComponent";
 import {useSelector} from "react-redux";
-import PostMenuComponent from "../component/PostMenuComponent";
+import PostImageComponent from "../component/PostImageComponent";
 
 export default function PostDetailsPage({route, navigation}) {
-    // const [commentList, setCommentList] = React.useState([]);
     const postId = route.params.postId;
     const posts = useSelector(state => state.post.posts);
     const post = posts[postId];
@@ -32,10 +31,10 @@ export default function PostDetailsPage({route, navigation}) {
 
                     <View style={styles.contentContentsContainer}>
                         <View style={styles.textContainer}>
-                            <Text style={styles.contentsText}>{post?.contents ? [0]?.value : ""}</Text>
+                            <Text style={styles.contentsText}>{post?.contents[0]?.value}</Text>
                         </View>
                         <TouchableOpacity style={styles.imagesContainer}>
-
+                            <PostImageComponent images={post.mediaIds}/>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -96,7 +95,9 @@ const styles = StyleSheet.create({
         fontSize: 15
     },
 
-    imagesContainer: {},
+    imagesContainer: {
+        height: 150
+    },
 
     reactionComponentContainer: {
         borderTopColor: theme.colors.border,
