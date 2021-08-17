@@ -1,28 +1,16 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 
 import SplashScreen from 'react-native-splash-screen';
 import MyTabs from "./MyTabs";
-import {Text, View} from "react-native";
-// import {tokenStorage} from "../utils/TokenStorage";
 import messaging from '@react-native-firebase/messaging';
-import urls from "../network/ServerUrls";
 import {pushApi} from "../network/PushApi";
+import LoginPage from "./LoginPage";
 
 const Welcome = () => {
-    // permission 요청
-    // const auth = messaging().requestPermission()
-    //     .then(auth => console.log(auth));
-
-    // background notification handler 등록
-    // messaging().setBackgroundMessageHandler(async message => {
-    //     console.log("OK: ", message)
-    // });
-
     useEffect(() => {
-        // 유저 인증이 되어있는지 확인 후 토큰 넣기
-        // tokenStorage.setToken("TEMP TOKEN");
+        // TODO 유저 인증이 되어있는지 확인 후 토큰 넣기
 
-        // push token 받기
+        // push token 등록 요청
         messaging()
             .getToken()
             .then(token => {
@@ -34,8 +22,15 @@ const Welcome = () => {
         }, 1000);
     }, []);
 
+    let isLogin = false;
+
     return (
-        <MyTabs/>
+        // login 상태에 따라서 다른 스크린으로
+        (isLogin)
+            ?
+                <MyTabs/>
+            :
+                <LoginPage/>
     );
 };
 

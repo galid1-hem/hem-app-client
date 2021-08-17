@@ -41,11 +41,6 @@ const PostImageComponent = (props) => {
                             <Image source={{uri: images[1].imageUrl}} style={styles.image}/>
                         </View>
                         <View style={styles.imageContainer}>
-                            <View style={styles.remainImagesContainer}>
-                                <Text style={{color: "white", fontWeight: "bold", fontSize: 16}}>
-                                    + {images.length - 2}장
-                                </Text>
-                            </View>
                             <Image source={{uri: images[2].imageUrl}} style={styles.image}/>
                         </View>
                     </View>
@@ -64,6 +59,11 @@ const PostImageComponent = (props) => {
                             <Image source={{uri: images[1].imageUrl}} style={styles.image}/>
                         </View>
                         <View style={styles.imageContainer}>
+                            <View style={styles.remainImagesContainer}>
+                                <Text style={{color: "white", fontWeight: "bold", fontSize: 16}}>
+                                    + {images.length - 2}장
+                                </Text>
+                            </View>
                             <Image source={{uri: images[2].imageUrl}} style={styles.image}/>
                         </View>
                     </View>

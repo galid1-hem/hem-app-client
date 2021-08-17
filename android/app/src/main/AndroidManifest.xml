@@ -7,7 +7,7 @@
       android:name=".MainApplication"
       android:label="@string/app_name"
       android:icon="@mipmap/ic_launcher"
-      android:allowBackup="false"
+      android:allowBackup="true"
       android:usesCleartextTraffic="true"
       android:theme="@style/AppTheme">
       <activity
@@ -19,6 +19,9 @@
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
+            <!-- Redirect URI: "kakao{NATIVE_APP_KEY}://oauth“ -->
+            <data android:host="oauth"
+                  android:scheme="kakao7c68fe0a477a1fa717c4febe4b3ad701" />
         </intent-filter>
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />

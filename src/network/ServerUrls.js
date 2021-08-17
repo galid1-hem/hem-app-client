@@ -1,4 +1,4 @@
-const host = "192.168.219.163";
+const host = "172.30.1.43";
 
 const urls = {
     postServer: `http://${host}:8080`,
@@ -8,3 +8,4 @@ const urls = {
 
 
 export default urls;
+
